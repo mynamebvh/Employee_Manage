@@ -1,0 +1,14 @@
+{
+    "Environment": "development",
+    "ServerPort": 8080,
+    "Databases": {
+        "MySQL": {
+            "Hostname": "",
+            "DBName": "",
+            "Username": "",
+            "Password": "",
+            "Port": "",
+            "Parameter": ""
+        }
+    }
+}
