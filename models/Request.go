@@ -1,6 +1,7 @@
 package models
 
-type Report struct {
+type Request struct {
+	ID         int    `json:"id" gorm:"primaryKey"`
 	Type       string `json:"type"`
 	Content    string `json:"content"`
 	Status     bool   `json:"status"`

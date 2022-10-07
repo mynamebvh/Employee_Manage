@@ -7,8 +7,8 @@ import (
 func ApplicationV1Router(router *gin.Engine) {
 	v1 := router.Group("/api/v1")
 	{
-		// Hello World
-		v1HelloWorld := v1.Group("/hello")
-		helloRoute(v1HelloWorld)
+		// User route
+		v1HelloWorld := v1.Group("/users")
+		userRoute(v1HelloWorld)
 	}
 }

@@ -1,5 +1,7 @@
 package constant
 
+import "errors"
+
 const (
 	// NotFound error indicates a missing / not found record
 	NotFound        = "NotFound"
@@ -38,6 +40,43 @@ const (
 type AppError struct {
 	Err  error
 	Type string
+}
+
+// NewAppError initializes a new domain error using an error and its type.
+func NewAppError(err error, errType string) *AppError {
+	return &AppError{
+		Err:  err,
+		Type: errType,
+	}
+}
+
+// NewAppErrorWithType initializes a new default error for a given type.
+func NewAppErrorWithType(errType string) *AppError {
+	var err error
+
+	switch errType {
+	case NotFound:
+		err = errors.New(notFoundMessage)
+	case ValidationError:
+		err = errors.New(validationErrorMessage)
+	case ResourceAlreadyExists:
+		err = errors.New(alreadyExistsErrorMessage)
+	case RepositoryError:
+		err = errors.New(repositoryErrorMessage)
+	case NotAuthenticated:
+		err = errors.New(notAuthenticatedErrorMessage)
+	case NotAuthorized:
+		err = errors.New(notAuthorizedErrorMessage)
+	case TokenGeneratorError:
+		err = errors.New(tokenGeneratorErrorMessage)
+	default:
+		err = errors.New(unknownErrorMessage)
+	}
+
+	return &AppError{
+		Err:  err,
+		Type: errType,
+	}
 }
 
 // String converts the app error to a human-readable string.

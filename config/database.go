@@ -24,8 +24,9 @@ type DBConfig struct {
 func GormOpen() (gormDB *gorm.DB, err error) {
 	viper.SetConfigFile("config.json")
 	err = viper.ReadInConfig()
+
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	configDB := viper.GetStringMap("Databases.MYSQL")
@@ -34,13 +35,11 @@ func GormOpen() (gormDB *gorm.DB, err error) {
 	errDecode := mapstructure.Decode(configDB, &config)
 
 	if errDecode != nil {
-		fmt.Println(errDecode)
+		return nil, errDecode
 	}
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", config.Username, config.Password, config.Hostname, config.Port, config.DBName)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-
-	// db.AutoMigrate(&models.Department{}, &models.User{}, &models.Manager{}, &models.Report{}, &models.Token{}, &models.Calendar{})
 
 	return db, err
 }
