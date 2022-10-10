@@ -1,0 +1,293 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Documentation's Employee Manager",
+        "title": "Employee Manager",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "Bui Viet Hoang",
+            "email": "mynamebvh@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/v1",
+    "paths": {
+        "/users": {
+            "post": {
+                "description": "Create new user on the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Create New User",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.NewUser"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.MessageResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.MessageResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{user_id}": {
+            "get": {
+                "description": "Get user by ID on the system",
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get user by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id of user",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.MessageResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.MessageResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update user by ID on the system",
+                "tags": [
+                    "user"
+                ],
+                "summary": "Update user by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id of user",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.NewUser"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.MessageResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.MessageResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete user by ID on the system",
+                "tags": [
+                    "user"
+                ],
+                "summary": "Delete user by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id of user",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.MessageResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.MessageResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "controllers.MessageResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.NewUser": {
+            "type": "object",
+            "required": [
+                "address",
+                "birthday",
+                "department_id",
+                "email",
+                "employee_code",
+                "full_name",
+                "gender",
+                "phone",
+                "role_id"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "Hoai Duc, Ha Noi"
+                },
+                "birthday": {
+                    "type": "string",
+                    "example": "2022-10-07T08:43:38+00:00"
+                },
+                "department_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "email": {
+                    "type": "string",
+                    "example": "mynamebvh@gmail.com"
+                },
+                "employee_code": {
+                    "type": "string",
+                    "example": "001"
+                },
+                "full_name": {
+                    "type": "string",
+                    "example": "Bui Viet Hoang"
+                },
+                "gender": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "phone": {
+                    "type": "string",
+                    "example": "0979150931"
+                },
+                "role_id": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "birthday": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "description": "Department   Department\nRole         Role",
+                    "type": "string"
+                },
+                "department_id": {
+                    "type": "integer"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "employee_code": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "role_id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

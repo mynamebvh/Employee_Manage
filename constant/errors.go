@@ -36,6 +36,11 @@ const (
 	unknownErrorMessage = "Something went wrong"
 )
 
+type ErrorValidate struct {
+	Field   string
+	Message string
+}
+
 // AppError defines an application (domain) error
 type AppError struct {
 	Err  error

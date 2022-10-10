@@ -3,13 +3,13 @@ package controllers
 import "time"
 
 type NewUser struct {
-	EmployeeCode string    `json:"employee_code"`
-	FullName     string    `json:"full_name"`
-	Phone        string    `json:"phone"`
-	Email        string    `json:"email"`
-	Gender       bool      `json:"gender"`
-	Birthday     time.Time `json:"birthday"`
-	Address      string    `json:"address"`
-	DepartmentID int       `json:"department_id"`
-	RoleID       int       `json:"role_id"`
+	EmployeeCode string    `json:"employee_code" example:"001" validate:"required"`
+	FullName     string    `json:"full_name" example:"Bui Viet Hoang" validate:"required"`
+	Phone        string    `json:"phone" example:"0979150931" validate:"required"`
+	Email        string    `json:"email" example:"mynamebvh@gmail.com" validate:"required"`
+	Gender       bool      `json:"gender" example:"true" validate:"required"`
+	Birthday     time.Time `json:"birthday" example:"2022-10-07T08:43:38+00:00" validate:"required"`
+	Address      string    `json:"address" example:"Hoai Duc, Ha Noi" validate:"required"`
+	DepartmentID int       `json:"department_id" example:"1" validate:"required"`
+	RoleID       int       `json:"role_id" example:"1" validate:"required"`
 }

@@ -10,6 +10,7 @@ import (
 )
 
 type MessagesResponse struct {
+	Success bool   `json:"success"`
 	Message string `json:"message"`
 }
 
@@ -19,12 +20,12 @@ func HandlerError(c *gin.Context) {
 
 	errs := c.Errors
 
-	fmt.Println("xin chao", errs)
+	fmt.Println("error", errs)
 
 	if len(errs) > 0 {
 		err, ok := errs[0].Err.(*models.AppError)
 		if ok {
-			resp := MessagesResponse{Message: err.Error()}
+			resp := MessagesResponse{Success: false, Message: err.Error()}
 			switch err.Type {
 			case models.NotFound:
 				c.JSON(http.StatusNotFound, resp)
