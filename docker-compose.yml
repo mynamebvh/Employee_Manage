@@ -1,0 +1,34 @@
+version: "3"
+
+services:
+  backend:
+    build: .
+    image: employee-manager
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysqldb
+    networks:
+      - go-network
+    restart: on-failure
+
+  mysqldb:
+    image: mysql:8
+    environment:
+      - MYSQL_DATABASE=employee_manage
+      - MYSQL_ROOT_PASSWORD=tF8jtP#zdz
+      - MYSQL_USER=mynamebvh
+      - MYSQL_PASSWORD:tF8jtP#zdz
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - go-network
+
+volumes:
+  dbdata:
+
+networks:
+  go-network:
+    driver: bridge
