@@ -1,10 +1,11 @@
-package controllers
+package user
 
 import "time"
 
 type NewUser struct {
 	EmployeeCode string    `json:"employee_code" example:"001" validate:"required"`
 	FullName     string    `json:"full_name" example:"Bui Viet Hoang" validate:"required"`
+	Password     string    `json:"password" example:"hoangdz" validate:"required"`
 	Phone        string    `json:"phone" example:"0979150931" validate:"required"`
 	Email        string    `json:"email" example:"mynamebvh@gmail.com" validate:"required"`
 	Gender       bool      `json:"gender" example:"true" validate:"required"`

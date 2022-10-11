@@ -1,49 +1,41 @@
-basePath: /v1
+basePath: /api/v1
 definitions:
-  controllers.MessageResponse:
+  auth.LoginResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  auth.MessageResponse:
     properties:
       message:
         type: string
     type: object
-  controllers.NewUser:
+  auth.RequestLogin:
     properties:
-      address:
-        example: Hoai Duc, Ha Noi
-        type: string
-      birthday:
-        example: "2022-10-07T08:43:38+00:00"
-        type: string
-      department_id:
-        example: 1
-        type: integer
       email:
         example: mynamebvh@gmail.com
         type: string
-      employee_code:
-        example: "001"
+      password:
+        example: hoangdz
         type: string
-      full_name:
-        example: Bui Viet Hoang
-        type: string
-      gender:
-        example: true
-        type: boolean
-      phone:
-        example: "0979150931"
-        type: string
-      role_id:
-        example: 1
-        type: integer
     required:
-    - address
-    - birthday
-    - department_id
     - email
-    - employee_code
-    - full_name
-    - gender
-    - phone
-    - role_id
+    - password
+    type: object
+  models.Token:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      type:
+        type: string
+      user_id:
+        type: integer
+      value:
+        type: string
     type: object
   models.User:
     properties:
@@ -68,14 +60,63 @@ definitions:
         type: boolean
       id:
         type: integer
-      password:
-        type: string
       phone:
         type: string
       role_id:
         type: integer
+      token:
+        $ref: '#/definitions/models.Token'
       updated_at:
         type: string
+    type: object
+  user.MessageResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  user.NewUser:
+    properties:
+      address:
+        example: Hoai Duc, Ha Noi
+        type: string
+      birthday:
+        example: "2022-10-07T08:43:38+00:00"
+        type: string
+      department_id:
+        example: 1
+        type: integer
+      email:
+        example: mynamebvh@gmail.com
+        type: string
+      employee_code:
+        example: "001"
+        type: string
+      full_name:
+        example: Bui Viet Hoang
+        type: string
+      gender:
+        example: true
+        type: boolean
+      password:
+        example: hoangdz
+        type: string
+      phone:
+        example: "0979150931"
+        type: string
+      role_id:
+        example: 1
+        type: integer
+    required:
+    - address
+    - birthday
+    - department_id
+    - email
+    - employee_code
+    - full_name
+    - gender
+    - password
+    - phone
+    - role_id
     type: object
 host: localhost:8080
 info:
@@ -90,6 +131,36 @@ info:
   title: Employee Manager
   version: "1.0"
 paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login account
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RequestLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/auth.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/auth.MessageResponse'
+      summary: Login
+      tags:
+      - auth
   /users:
     post:
       consumes:
@@ -101,7 +172,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/controllers.NewUser'
+          $ref: '#/definitions/user.NewUser'
       produces:
       - application/json
       responses:
@@ -112,11 +183,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/controllers.MessageResponse'
+            $ref: '#/definitions/user.MessageResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/controllers.MessageResponse'
+            $ref: '#/definitions/user.MessageResponse'
       summary: Create New User
       tags:
       - user
@@ -133,15 +204,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controllers.MessageResponse'
+            $ref: '#/definitions/user.MessageResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/controllers.MessageResponse'
+            $ref: '#/definitions/user.MessageResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/controllers.MessageResponse'
+            $ref: '#/definitions/user.MessageResponse'
       summary: Delete user by ID
       tags:
       - user
@@ -161,11 +232,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/controllers.MessageResponse'
+            $ref: '#/definitions/user.MessageResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/controllers.MessageResponse'
+            $ref: '#/definitions/user.MessageResponse'
       summary: Get user by ID
       tags:
       - user
@@ -182,7 +253,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/controllers.NewUser'
+          $ref: '#/definitions/user.NewUser'
       responses:
         "200":
           description: OK
@@ -191,11 +262,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/controllers.MessageResponse'
+            $ref: '#/definitions/user.MessageResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/controllers.MessageResponse'
+            $ref: '#/definitions/user.MessageResponse'
       summary: Update user by ID
       tags:
       - user

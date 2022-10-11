@@ -1,4 +1,4 @@
-package controllers
+package user
 
 import (
 	"employee_manage/models"
@@ -75,6 +75,7 @@ func CreateUser(c *gin.Context) {
 	user := models.User{
 		EmployeeCode: request.EmployeeCode,
 		FullName:     request.FullName,
+		Password:     request.Password,
 		Phone:        request.Phone,
 		Email:        request.Email,
 		Gender:       request.Gender,

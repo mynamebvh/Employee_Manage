@@ -19,6 +19,10 @@ const (
 	RepositoryError        = "RepositoryError"
 	repositoryErrorMessage = "Error in repository operation"
 
+	// WrongPassword error
+	WrongPassword        = "Wrong password"
+	wrongPasswordMessage = "Wrong password"
+
 	// NotAuthenticated indicates an authentication error
 	NotAuthenticated             = "NotAuthenticated"
 	notAuthenticatedErrorMessage = "Not Authenticated"
@@ -62,6 +66,8 @@ func NewAppErrorWithType(errType string) *AppError {
 	switch errType {
 	case NotFound:
 		err = errors.New(notFoundMessage)
+	case WrongPassword:
+		err = errors.New(wrongPasswordMessage)
 	case ValidationError:
 		err = errors.New(validationErrorMessage)
 	case ResourceAlreadyExists:

@@ -6,6 +6,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 
 	_ "employee_manage/docs"
+	"employee_manage/middlewares"
 )
 
 // @title Employee Manager
@@ -21,15 +22,18 @@ import (
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
 // @host localhost:8080
-// @BasePath /v1
+// @BasePath /api/v1
 func ApplicationV1Router(router *gin.Engine) {
 
 	router.GET("/v1/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	v1 := router.Group("/api/v1")
 	{
+		// Auth
+		v1Auth := v1.Group("/auth")
+		authRoute(v1Auth)
 
 		// User route
-		v1HelloWorld := v1.Group("/users")
-		userRoute(v1HelloWorld)
+		v1User := v1.Group("/users", middlewares.Protect())
+		userRoute(v1User)
 	}
 }

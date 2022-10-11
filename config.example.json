@@ -3,12 +3,18 @@
     "ServerPort": 8080,
     "Databases": {
         "MySQL": {
-            "Hostname": "",
-            "DBName": "",
-            "Username": "",
-            "Password": "",
-            "Port": "",
+            "Hostname": "194.233.xx.xx",
+            "DBName": "employee_manage",
+            "Username": "root",
+            "Password": "xx",
+            "Port": "3308",
             "Parameter": ""
         }
+    },
+    "JWT": {
+        "SecretAccessToken": "hoangdz",
+        "ExpiredAccessToken": 1,
+        "SecretRefreshToken": "hoangdz",
+        "ExpiredRefreshToken": 2
     }
 }

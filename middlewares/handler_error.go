@@ -30,6 +30,9 @@ func HandlerError(c *gin.Context) {
 			case models.NotFound:
 				c.JSON(http.StatusNotFound, resp)
 				return
+			case models.WrongPassword:
+				c.JSON(http.StatusUnauthorized, resp)
+				return
 			case models.ValidationError:
 				c.JSON(http.StatusBadRequest, resp)
 				return

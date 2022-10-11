@@ -9,6 +9,8 @@ import (
 )
 
 func main() {
+	config.LoadEnv()
+
 	roles := []models.Role{
 		{ID: 1, Name: "admin"},
 		{ID: 2, Name: "manager"},

@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+	config.LoadEnv()
 	db, err := config.GormOpen()
 
 	if err != nil {

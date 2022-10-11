@@ -13,6 +13,7 @@ docker-compose up  --build  -d
 
 ## Table of Contents
 - [Features](#features)
+- [Docs API](#docs)
 
 ## Features
 
@@ -26,3 +27,9 @@ docker-compose up  --build  -d
 - **Dependency management**: with [go modules](https://golang.org/ref/mod)
 - **Environment variables**: using [viper](https://github.com/spf13/viper)
 - **Docker support**
+
+## Docs API
+
+```bash 
+http://localhost:8080/v1/docs/index.html
+```

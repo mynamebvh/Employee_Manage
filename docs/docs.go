@@ -24,6 +24,52 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/login": {
+            "post": {
+                "description": "Login account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Login",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/auth.RequestLogin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/auth.LoginResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/auth.MessageResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/auth.MessageResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "post": {
                 "description": "Create new user on the system",
@@ -44,7 +90,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controllers.NewUser"
+                            "$ref": "#/definitions/user.NewUser"
                         }
                     }
                 ],
@@ -58,13 +104,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/controllers.MessageResponse"
+                            "$ref": "#/definitions/user.MessageResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controllers.MessageResponse"
+                            "$ref": "#/definitions/user.MessageResponse"
                         }
                     }
                 }
@@ -96,13 +142,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/controllers.MessageResponse"
+                            "$ref": "#/definitions/user.MessageResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controllers.MessageResponse"
+                            "$ref": "#/definitions/user.MessageResponse"
                         }
                     }
                 }
@@ -127,7 +173,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controllers.NewUser"
+                            "$ref": "#/definitions/user.NewUser"
                         }
                     }
                 ],
@@ -141,13 +187,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/controllers.MessageResponse"
+                            "$ref": "#/definitions/user.MessageResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controllers.MessageResponse"
+                            "$ref": "#/definitions/user.MessageResponse"
                         }
                     }
                 }
@@ -171,19 +217,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controllers.MessageResponse"
+                            "$ref": "#/definitions/user.MessageResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/controllers.MessageResponse"
+                            "$ref": "#/definitions/user.MessageResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controllers.MessageResponse"
+                            "$ref": "#/definitions/user.MessageResponse"
                         }
                     }
                 }
@@ -191,7 +237,18 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "controllers.MessageResponse": {
+        "auth.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "auth.MessageResponse": {
             "type": "object",
             "properties": {
                 "message": {
@@ -199,55 +256,40 @@ const docTemplate = `{
                 }
             }
         },
-        "controllers.NewUser": {
+        "auth.RequestLogin": {
             "type": "object",
             "required": [
-                "address",
-                "birthday",
-                "department_id",
                 "email",
-                "employee_code",
-                "full_name",
-                "gender",
-                "phone",
-                "role_id"
+                "password"
             ],
             "properties": {
-                "address": {
-                    "type": "string",
-                    "example": "Hoai Duc, Ha Noi"
-                },
-                "birthday": {
-                    "type": "string",
-                    "example": "2022-10-07T08:43:38+00:00"
-                },
-                "department_id": {
-                    "type": "integer",
-                    "example": 1
-                },
                 "email": {
                     "type": "string",
                     "example": "mynamebvh@gmail.com"
                 },
-                "employee_code": {
+                "password": {
                     "type": "string",
-                    "example": "001"
+                    "example": "hoangdz"
+                }
+            }
+        },
+        "models.Token": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
                 },
-                "full_name": {
-                    "type": "string",
-                    "example": "Bui Viet Hoang"
+                "id": {
+                    "type": "integer"
                 },
-                "gender": {
-                    "type": "boolean",
-                    "example": true
+                "type": {
+                    "type": "string"
                 },
-                "phone": {
-                    "type": "string",
-                    "example": "0979150931"
+                "user_id": {
+                    "type": "integer"
                 },
-                "role_id": {
-                    "type": "integer",
-                    "example": 1
+                "value": {
+                    "type": "string"
                 }
             }
         },
@@ -282,17 +324,82 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "password": {
-                    "type": "string"
-                },
                 "phone": {
                     "type": "string"
                 },
                 "role_id": {
                     "type": "integer"
                 },
+                "token": {
+                    "$ref": "#/definitions/models.Token"
+                },
                 "updated_at": {
                     "type": "string"
+                }
+            }
+        },
+        "user.MessageResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.NewUser": {
+            "type": "object",
+            "required": [
+                "address",
+                "birthday",
+                "department_id",
+                "email",
+                "employee_code",
+                "full_name",
+                "gender",
+                "password",
+                "phone",
+                "role_id"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "Hoai Duc, Ha Noi"
+                },
+                "birthday": {
+                    "type": "string",
+                    "example": "2022-10-07T08:43:38+00:00"
+                },
+                "department_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "email": {
+                    "type": "string",
+                    "example": "mynamebvh@gmail.com"
+                },
+                "employee_code": {
+                    "type": "string",
+                    "example": "001"
+                },
+                "full_name": {
+                    "type": "string",
+                    "example": "Bui Viet Hoang"
+                },
+                "gender": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "password": {
+                    "type": "string",
+                    "example": "hoangdz"
+                },
+                "phone": {
+                    "type": "string",
+                    "example": "0979150931"
+                },
+                "role_id": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         }
@@ -303,7 +410,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8080",
-	BasePath:         "/v1",
+	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Employee Manager",
 	Description:      "Documentation's Employee Manager",

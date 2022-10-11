@@ -7,6 +7,7 @@ import (
 
 	"time"
 
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -19,19 +20,34 @@ type User struct {
 	Gender       bool      `json:"gender" gorm:"not null"`
 	Birthday     time.Time `json:"birthday" gorm:"not null"`
 	Address      string    `json:"address" gorm:"not null"`
-	Password     string    `json:"password" gorm:"not null"`
+	Password     string    `json:"-" gorm:"not null"`
 	DepartmentID int       `json:"department_id" gorm:"not null;column:department_id" `
 	RoleID       int       `json:"role_id" gorm:"not null;column:role_id" `
+	Token        Token
 	// Department   Department
 	// Role         Role
 	CreatedAt time.Time `json:"created_at,omitempty" gorm:"autoCreateTime:mili"`
 	UpdatedAt time.Time `json:"updated_at,omitempty" gorm:"autoUpdateTime:mili"`
 }
 
-func CreateUser(user *User) (err error) {
-	// newUser := db.DB.Create(&user)
-	// return newUser.Error
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 12)
+	return string(bytes), err
+}
 
+func CheckPasswordHash(hashedPassword string, password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	return err == nil
+}
+
+func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
+	hash, err := HashPassword(u.Password)
+	u.Password = hash
+
+	return
+}
+
+func CreateUser(user *User) (err error) {
 	err = db.DB.Create(user).Error
 
 	if err != nil {
@@ -66,6 +82,21 @@ func (u *User) GetAllUser(users *[]User, limit int, offset int) (err error) {
 
 func GetUserByID(user *User, id int) (err error) {
 	err = db.DB.First(user, id).Error
+
+	if err != nil {
+		switch err.Error() {
+		case gorm.ErrRecordNotFound.Error():
+			err = modelErrors.NewAppErrorWithType(modelErrors.NotFound)
+		default:
+			err = modelErrors.NewAppErrorWithType(modelErrors.UnknownError)
+		}
+	}
+
+	return
+}
+
+func GetUserByEmail(user *User, email string) (err error) {
+	err = db.DB.Where("email=?", email).First(user).Error
 
 	if err != nil {
 		switch err.Error() {
