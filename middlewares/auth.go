@@ -2,7 +2,6 @@ package middlewares
 
 import (
 	"employee_manage/config"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -22,23 +21,21 @@ func Protect() gin.HandlerFunc {
 				Success: false,
 				Message: "Token is required",
 			})
-			return
+			c.Abort()
 		}
 
 		tokenString = strings.Split(tokenString, " ")[1]
 
-		fmt.Println("Hello", tokenString)
-		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		token, _ := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			return []byte(config.ConfigApp.JwtConfig.SecretAccessToken), nil
 		})
 
-		fmt.Println(err)
 		if token == nil {
 			c.JSON(http.StatusUnauthorized, auth.MessageResponse{
 				Success: false,
 				Message: "Invalid token",
 			})
-			return
+			c.Abort()
 		} else {
 			c.Next()
 		}
