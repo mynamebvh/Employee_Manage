@@ -5,7 +5,6 @@ COPY . .
 RUN go mod download
 RUN go build -o employee_manager
 
-
 FROM alpine:latest
 WORKDIR /employee_manager
 COPY --from=build /build .

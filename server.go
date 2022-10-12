@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"employee_manage/config"
 	middlewares "employee_manage/middlewares"
 	"employee_manage/routes"
+	"employee_manage/services"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -16,27 +16,10 @@ import (
 
 func main() {
 	router := gin.Default()
-	initialGinConfig(router)
+	services.InitialGinConfig(router)
 	router.Use(middlewares.HandlerError)
 	routes.ApplicationV1Router(router)
 	startServer(router)
-
-}
-
-func initialGinConfig(router *gin.Engine) {
-	var err error
-
-	err = config.LoadEnv()
-
-	if err != nil {
-		panic(fmt.Errorf("fatal error in load env: %s", err))
-	}
-
-	config.DB, err = config.GormOpen()
-
-	if err != nil {
-		panic(fmt.Errorf("fatal error in database file: %s", err))
-	}
 
 }
 

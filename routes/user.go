@@ -9,6 +9,7 @@ import (
 func userRoute(route *gin.RouterGroup) {
 	route.GET("/:id", controllers.GetUserByID)
 	route.POST("/", controllers.CreateUser)
+	route.PUT("/change-password/:id", controllers.ChangePassword)
 	route.PUT("/:id", controllers.UpdateUserByID)
 	route.DELETE("/:id", controllers.DeleteUserByID)
 }

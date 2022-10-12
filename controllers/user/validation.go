@@ -27,6 +27,22 @@ func validateStructUser(user NewUser) (errValidate []errorModels.ErrorValidate) 
 	return
 }
 
+func validateStructChangePassword(rPassword RequestChangePassword) (errValidate []errorModels.ErrorValidate) {
+	validate = validator.New()
+	err := validate.Struct(rPassword)
+
+	if err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			errValidate = append(errValidate, errorModels.ErrorValidate{
+				Field:   err.StructField(),
+				Message: fmt.Sprintf("%s a is %s", strings.ToLower(err.StructField()), err.Tag()),
+			})
+		}
+	}
+
+	return
+}
+
 func updateValidation(request map[string]interface{}) (errValidate []errorModels.ErrorValidate) {
 
 	for k, v := range request {

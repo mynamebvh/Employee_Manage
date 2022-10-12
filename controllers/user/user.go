@@ -1,12 +1,12 @@
 package user
 
 import (
-	"employee_manage/models"
 	"errors"
 	"net/http"
 	"strconv"
 
 	errorModels "employee_manage/constant"
+	"employee_manage/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -123,15 +123,15 @@ func UpdateUserByID(c *gin.Context) {
 		return
 	}
 
-	errValidate := updateValidation(requestMap)
+	// errValidate := updateValidation(requestMap)
 
-	if errValidate != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   errValidate,
-		})
-		return
-	}
+	// if errValidate != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{
+	// 		"success": false,
+	// 		"error":   errValidate,
+	// 	})
+	// 	return
+	// }
 
 	user, err := models.UpdateUserByID(userID, requestMap)
 
@@ -170,4 +170,51 @@ func DeleteUserByID(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "user deleted successfully"})
+}
+
+func ChangePassword(c *gin.Context) {
+	userID, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		appError := errorModels.NewAppError(errors.New("user id is invalid"), errorModels.ValidationError)
+		c.Error(appError)
+		return
+	}
+
+	var user models.User
+	err = models.GetUserByID(&user, userID)
+
+	if err != nil {
+		appError := errorModels.NewAppError(err, errorModels.ValidationError)
+		c.Error(appError)
+		return
+	}
+
+	var request RequestChangePassword
+	if err := c.BindJSON(&request); err != nil {
+		appError := errorModels.NewAppError(err, errorModels.ValidationError)
+		_ = c.Error(appError)
+		return
+	}
+
+	errValidate := validateStructChangePassword(request)
+	if errValidate != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"error":   errValidate,
+		})
+		return
+	}
+
+	err = models.ChangePassword(user, request.OldPassword, request.NewPassword)
+	if err != nil {
+		appError := errorModels.NewAppError(err, errorModels.ValidationError)
+		_ = c.Error(appError)
+		return
+	}
+
+	c.JSON(http.StatusOK, MessageResponse{
+		Success: true,
+		Message: "Change password successfully",
+	})
 }

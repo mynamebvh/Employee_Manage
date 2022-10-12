@@ -14,3 +14,8 @@ type NewUser struct {
 	DepartmentID int       `json:"department_id" example:"1" validate:"required"`
 	RoleID       int       `json:"role_id" example:"1" validate:"required"`
 }
+
+type RequestChangePassword struct {
+	OldPassword string `json:"old_password" example:"hoangdz" validate:"required"`
+	NewPassword string `json:"new_password" example:"hoangdz1" validate:"required"`
+}

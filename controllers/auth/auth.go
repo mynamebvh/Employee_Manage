@@ -82,7 +82,7 @@ func Login(c *gin.Context) {
 
 	err = models.CreateToken(&models.Token{
 		Type:   constant.RefreshToken,
-		UserID: user.ID,
+		UserID: &user.ID,
 		Value:  refreshToken.Token,
 	})
 
@@ -97,5 +97,63 @@ func Login(c *gin.Context) {
 			AccessToken:  accessToken.Token,
 			RefreshToken: refreshToken.Token,
 		},
+	})
+}
+
+func SendCodeResetPassword(c *gin.Context) {
+
+	var request RequestSendCodeResetPassword
+	if err := c.BindJSON(&request); err != nil {
+		appError := errorModels.NewAppError(err, errorModels.ValidationError)
+		_ = c.Error(appError)
+		return
+	}
+
+	var user models.User
+	err := models.GetUserByEmail(&user, request.Email)
+	if err != nil {
+		appError := errorModels.NewAppError(err, errorModels.ValidationError)
+		c.Error(appError)
+		return
+	}
+
+	code, err := models.GenerateResetPassword(user, request.Email)
+	if err != nil {
+		appError := errorModels.NewAppError(err, errorModels.ValidationError)
+		c.Error(appError)
+		return
+	}
+
+	c.JSON(http.StatusOK, code)
+}
+
+func ResetPassword(c *gin.Context) {
+
+	var request RequestResetPassword
+	if err := c.BindJSON(&request); err != nil {
+		appError := errorModels.NewAppError(err, errorModels.ValidationError)
+		_ = c.Error(appError)
+		return
+	}
+
+	token, err := models.CheckToken(request.Code)
+	if err != nil {
+		appError := errorModels.NewAppError(err, errorModels.ValidationError)
+		_ = c.Error(appError)
+		return
+	}
+
+	err = models.ResetPassword(token, request.NewPassword)
+	if err != nil {
+		appError := errorModels.NewAppError(err, errorModels.ValidationError)
+		_ = c.Error(appError)
+		return
+	}
+
+	_ = models.DeleteToken(request.Code)
+
+	c.JSON(http.StatusOK, MessageResponse{
+		Success: true,
+		Message: "Reset password successfully",
 	})
 }

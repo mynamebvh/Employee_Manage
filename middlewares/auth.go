@@ -37,6 +37,7 @@ func Protect() gin.HandlerFunc {
 			})
 			c.Abort()
 		} else {
+			c.Set("user_id", token)
 			c.Next()
 		}
 	}

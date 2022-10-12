@@ -3,7 +3,9 @@ package models
 import (
 	db "employee_manage/config"
 	modelErrors "employee_manage/constant"
+	"employee_manage/utils"
 	"encoding/json"
+	"errors"
 
 	"time"
 
@@ -23,11 +25,27 @@ type User struct {
 	Password     string    `json:"-" gorm:"not null"`
 	DepartmentID int       `json:"department_id" gorm:"not null;column:department_id" `
 	RoleID       int       `json:"role_id" gorm:"not null;column:role_id" `
-	Token        Token
-	// Department   Department
-	// Role         Role
-	CreatedAt time.Time `json:"created_at,omitempty" gorm:"autoCreateTime:mili"`
-	UpdatedAt time.Time `json:"updated_at,omitempty" gorm:"autoUpdateTime:mili"`
+	Token        Token     `json:"-"`
+	CreatedAt    time.Time `json:"created_at,omitempty" gorm:"autoCreateTime:mili"`
+	UpdatedAt    time.Time `json:"updated_at,omitempty" gorm:"autoUpdateTime:mili"`
+}
+
+/* HOOK */
+func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
+	hash, err := HashPassword(u.Password)
+	u.Password = hash
+
+	return
+}
+
+func (u *User) BeforeUpdate(tx *gorm.DB) (err error) {
+	hash, err := HashPassword(u.Password)
+
+	if tx.Statement.Changed("Password") {
+		tx.Statement.SetColumn("password", hash)
+	}
+
+	return
 }
 
 func HashPassword(password string) (string, error) {
@@ -38,13 +56,6 @@ func HashPassword(password string) (string, error) {
 func CheckPasswordHash(hashedPassword string, password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	return err == nil
-}
-
-func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
-	hash, err := HashPassword(u.Password)
-	u.Password = hash
-
-	return
 }
 
 func CreateUser(user *User) (err error) {
@@ -149,6 +160,41 @@ func DeleteUserByID(id int) (err error) {
 	if tx.RowsAffected == 0 {
 		err = modelErrors.NewAppErrorWithType(modelErrors.NotFound)
 	}
+
+	return
+}
+
+func ChangePassword(user User, oldPassword string, newPassword string) (err error) {
+
+	isCorrect := CheckPasswordHash(user.Password, oldPassword)
+
+	if !isCorrect {
+		err = modelErrors.NewAppError(errors.New("old password not correct"), "Validation")
+		return
+	}
+
+	err = db.DB.Model(&user).Update("password", newPassword).Error
+
+	return
+}
+
+func ResetPassword(token Token, newPassword string) (err error) {
+	var user User
+	err = db.DB.Model(&user).Where("email = ?", token.Email).Update("password", newPassword).Error
+	return
+}
+
+func GenerateResetPassword(user User, email string) (code string, err error) {
+
+	code = utils.RandomStringSecret(20)
+
+	expired := time.Now().Local().Add(time.Minute * time.Duration(5))
+	err = db.DB.Create(&Token{
+		Value:   code,
+		Type:    "reset_password",
+		Email:   email,
+		Expired: &expired,
+	}).Error
 
 	return
 }
