@@ -100,6 +100,17 @@ func Login(c *gin.Context) {
 	})
 }
 
+// Send code to mail godoc
+// @Tags auth
+// @Summary Send code to mail
+// @Description Send code to mail
+// @Accept  json
+// @Produce  json
+// @Param data body RequestSendCodeResetPassword true "body data"
+// @Success 200 {object} MessageResponse
+// @Failure 400 {object} MessageResponse
+// @Failure 500 {object} MessageResponse
+// @Router /auth/send-code [POST]
 func SendCodeResetPassword(c *gin.Context) {
 
 	var request RequestSendCodeResetPassword
@@ -127,6 +138,17 @@ func SendCodeResetPassword(c *gin.Context) {
 	c.JSON(http.StatusOK, code)
 }
 
+// ResetPassword godoc
+// @Tags auth
+// @Summary Reset password
+// @Description Reset pasword
+// @Accept  json
+// @Produce  json
+// @Param data body RequestResetPassword true "body data"
+// @Success 200 {object} MessageResponse
+// @Failure 400 {object} MessageResponse
+// @Failure 500 {object} MessageResponse
+// @Router /auth/reset-password [POST]
 func ResetPassword(c *gin.Context) {
 
 	var request RequestResetPassword

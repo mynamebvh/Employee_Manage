@@ -11,6 +11,32 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GetMe godoc
+// @Tags user
+// @Summary Get info user current
+// @Description Get info user current on the system
+// @Success 200 {object} dto.QueryResultGetMe
+// @Failure 400 {object} MessageResponse
+// @Failure 500 {object} MessageResponse
+// @Router /users/me [GET]
+func GetMe(c *gin.Context) {
+	var user models.User
+
+	payload := c.GetStringMap("payload")["user_id"].(float64)
+
+	userID := int(payload)
+
+	data, err := models.GetMe(&user, userID)
+
+	if err != nil {
+		appError := errorModels.NewAppError(err, errorModels.ValidationError)
+		c.Error(appError)
+		return
+	}
+
+	c.JSON(http.StatusOK, data)
+}
+
 // GetUserByID godoc
 // @Tags user
 // @Summary Get user by ID
@@ -172,6 +198,15 @@ func DeleteUserByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "user deleted successfully"})
 }
 
+// ChangePassword godoc
+// @Tags user
+// @Summary Change password
+// @Description Change password on the system
+// @Param data body RequestChangePassword true "body data"
+// @Success 200 {object} MessageResponse
+// @Failure 400 {object} MessageResponse
+// @Failure 500 {object} MessageResponse
+// @Router /users/change-password [PUT]
 func ChangePassword(c *gin.Context) {
 	userID, err := strconv.Atoi(c.Param("id"))
 

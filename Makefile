@@ -6,3 +6,5 @@ seeder:
 	go run ./db/seeder/seeder.go
 doc:
 	swag init -g routes/index.go
+docker-dev:
+	sudo docker-compose -f docker-compose.dev.yml up -d

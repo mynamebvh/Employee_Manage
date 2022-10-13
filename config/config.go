@@ -22,8 +22,9 @@ type JWTConfig struct {
 }
 
 type ConfigApplication struct {
-	DbConfig  DBConfig
-	JwtConfig JWTConfig
+	ServerPort string
+	DbConfig   DBConfig
+	JwtConfig  JWTConfig
 }
 
 var ConfigApp ConfigApplication
@@ -35,6 +36,8 @@ func LoadEnv() (err error) {
 	if err != nil {
 		return
 	}
+
+	ConfigApp.ServerPort = viper.GetString("ServerPort")
 
 	envDB := viper.GetStringMap("Databases.MYSQL")
 	envJWT := viper.GetStringMap("JWT")

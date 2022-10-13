@@ -3,6 +3,7 @@ package models
 import (
 	db "employee_manage/config"
 	modelErrors "employee_manage/constant"
+	"employee_manage/models/dto"
 	"employee_manage/utils"
 	"encoding/json"
 	"errors"
@@ -24,10 +25,10 @@ type User struct {
 	Address      string    `json:"address" gorm:"not null"`
 	Password     string    `json:"-" gorm:"not null"`
 	DepartmentID int       `json:"department_id" gorm:"not null;column:department_id" `
-	RoleID       int       `json:"role_id" gorm:"not null;column:role_id" `
+	RoleID       int       `json:"-" gorm:"not null;column:role_id" `
 	Token        Token     `json:"-"`
-	CreatedAt    time.Time `json:"created_at,omitempty" gorm:"autoCreateTime:mili"`
-	UpdatedAt    time.Time `json:"updated_at,omitempty" gorm:"autoUpdateTime:mili"`
+	CreatedAt    time.Time `json:"-" gorm:"autoCreateTime:mili"`
+	UpdatedAt    time.Time `json:"-" gorm:"autoUpdateTime:mili"`
 }
 
 /* HOOK */
@@ -39,9 +40,10 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 }
 
 func (u *User) BeforeUpdate(tx *gorm.DB) (err error) {
-	hash, err := HashPassword(u.Password)
 
 	if tx.Statement.Changed("Password") {
+		newPassword := tx.Statement.Dest.(map[string]interface{})["password"].(string)
+		hash, _ := HashPassword(newPassword)
 		tx.Statement.SetColumn("password", hash)
 	}
 
@@ -87,6 +89,36 @@ func (u *User) GetAllUser(users *[]User, limit int, offset int) (err error) {
 	if err != nil {
 		return err
 	}
+
+	return
+}
+
+func GetMe(user *User, id int) (queryResult dto.QueryResultGetMe, err error) {
+
+	db.DB.Model(user).
+		Select(
+			"users.id",
+			"users.full_name",
+			"users.employee_code",
+			"users.phone",
+			"users.email",
+			"users.gender",
+			"users.address",
+			"departments.name as department_name",
+		).
+		Where("users.id = ?", id).
+		Joins("left join departments on users.department_id = departments.id").Scan(&queryResult)
+
+	return
+}
+
+func GetRole(user *User, id int) (role string, err error) {
+	db.DB.Model(user).
+		Select(
+			"roles.name",
+		).
+		Where("users.id = ?", id).
+		Joins("left join roles on users.role_id = roles.id").Scan(&role)
 
 	return
 }

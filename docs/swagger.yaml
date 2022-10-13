@@ -11,6 +11,8 @@ definitions:
     properties:
       message:
         type: string
+      success:
+        type: boolean
     type: object
   auth.RequestLogin:
     properties:
@@ -24,29 +26,47 @@ definitions:
     - email
     - password
     type: object
-  models.Token:
+  auth.RequestResetPassword:
     properties:
-      created_at:
+      code:
         type: string
-      id:
-        type: integer
-      type:
+      new_password:
+        type: string
+    type: object
+  auth.RequestSendCodeResetPassword:
+    properties:
+      email:
+        example: mynamebvh@gmail.com
+        type: string
+    required:
+    - email
+    type: object
+  dto.QueryResultGetMe:
+    properties:
+      address:
+        type: string
+      birthday:
+        type: string
+      department_name:
+        type: string
+      email:
+        type: string
+      employee_code:
+        type: string
+      full_name:
+        type: string
+      gender:
+        type: boolean
+      phone:
         type: string
       user_id:
         type: integer
-      value:
-        type: string
     type: object
   models.User:
     properties:
       address:
         type: string
       birthday:
-        type: string
-      created_at:
-        description: |-
-          Department   Department
-          Role         Role
         type: string
       department_id:
         type: integer
@@ -62,17 +82,13 @@ definitions:
         type: integer
       phone:
         type: string
-      role_id:
-        type: integer
-      token:
-        $ref: '#/definitions/models.Token'
-      updated_at:
-        type: string
     type: object
   user.MessageResponse:
     properties:
       message:
         type: string
+      success:
+        type: boolean
     type: object
   user.NewUser:
     properties:
@@ -118,6 +134,18 @@ definitions:
     - phone
     - role_id
     type: object
+  user.RequestChangePassword:
+    properties:
+      new_password:
+        example: hoangdz1
+        type: string
+      old_password:
+        example: hoangdz
+        type: string
+    required:
+    - new_password
+    - old_password
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -159,6 +187,66 @@ paths:
           schema:
             $ref: '#/definitions/auth.MessageResponse'
       summary: Login
+      tags:
+      - auth
+  /auth/reset-password:
+    post:
+      consumes:
+      - application/json
+      description: Reset pasword
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RequestResetPassword'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/auth.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/auth.MessageResponse'
+      summary: Reset password
+      tags:
+      - auth
+  /auth/send-code:
+    post:
+      consumes:
+      - application/json
+      description: Send code to mail
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RequestSendCodeResetPassword'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/auth.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/auth.MessageResponse'
+      summary: Send code to mail
       tags:
       - auth
   /users:
@@ -268,6 +356,51 @@ paths:
           schema:
             $ref: '#/definitions/user.MessageResponse'
       summary: Update user by ID
+      tags:
+      - user
+  /users/change-password:
+    put:
+      description: Change password on the system
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/user.RequestChangePassword'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/user.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/user.MessageResponse'
+      summary: Change password
+      tags:
+      - user
+  /users/me:
+    get:
+      description: Get info user current on the system
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.QueryResultGetMe'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/user.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/user.MessageResponse'
+      summary: Get info user current
       tags:
       - user
 swagger: "2.0"

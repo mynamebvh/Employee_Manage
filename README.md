@@ -14,6 +14,7 @@ docker-compose up  --build  -d
 ## Table of Contents
 - [Features](#features)
 - [Docs API](#docs)
+- [Command](#command)
 
 ## Features
 
@@ -27,6 +28,33 @@ docker-compose up  --build  -d
 - **Dependency management**: with [go modules](https://golang.org/ref/mod)
 - **Environment variables**: using [viper](https://github.com/spf13/viper)
 - **Docker support**
+
+
+## Command
+1. Run project dev (hot reload)
+```bash 
+make dev
+```
+
+2. Migrate Database
+```bash 
+make migrate
+```
+
+3. Seeder Database
+```bash 
+make seeder
+```
+
+4. Generate docs
+```bash 
+make doc
+```
+
+5. Run project docker-compose (DEV)
+```bash 
+make docker-dev
+```
 
 ## Docs API
 

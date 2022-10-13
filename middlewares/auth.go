@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"employee_manage/config"
+	"employee_manage/models"
 	"net/http"
 	"strings"
 
@@ -22,6 +23,7 @@ func Protect() gin.HandlerFunc {
 				Message: "Token is required",
 			})
 			c.Abort()
+			return
 		}
 
 		tokenString = strings.Split(tokenString, " ")[1]
@@ -30,15 +32,41 @@ func Protect() gin.HandlerFunc {
 			return []byte(config.ConfigApp.JwtConfig.SecretAccessToken), nil
 		})
 
-		if token == nil {
+		if token.Valid {
+			claims := token.Claims.(jwt.MapClaims)
+			payload := claims["payload"].(map[string]interface{})
+			c.Set("payload", payload)
+			c.Next()
+		} else {
 			c.JSON(http.StatusUnauthorized, auth.MessageResponse{
 				Success: false,
 				Message: "Invalid token",
 			})
 			c.Abort()
-		} else {
-			c.Set("user_id", token)
-			c.Next()
+			return
 		}
+	}
+}
+
+func ProtectRole(roles []string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var user models.User
+		payload := c.GetStringMap("payload")["user_id"].(float64)
+		userID := int(payload)
+
+		role, _ := models.GetRole(&user, userID)
+
+		for _, value := range roles {
+			if role == value {
+				c.Next()
+				return
+			}
+		}
+
+		c.JSON(http.StatusForbidden, auth.MessageResponse{
+			Success: false,
+			Message: "You do not have permission to access this resource",
+		})
+		c.Abort()
 	}
 }
