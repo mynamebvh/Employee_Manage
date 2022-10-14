@@ -1,15 +1,17 @@
 package auth
 
 import (
+	"employee_manage/config"
 	"employee_manage/constant"
 	"employee_manage/models"
 	"employee_manage/services"
-	"fmt"
+	"errors"
 	"net/http"
 
 	errorModels "employee_manage/constant"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 // Login godoc
@@ -52,7 +54,6 @@ func Login(c *gin.Context) {
 	}
 
 	isCorrectPassword := models.CheckPasswordHash(user.Password, request.Password)
-	fmt.Println(user.Password, request.Password, isCorrectPassword)
 
 	if !isCorrectPassword {
 		appError := errorModels.NewAppErrorWithType(errorModels.WrongPassword)
@@ -177,5 +178,63 @@ func ResetPassword(c *gin.Context) {
 	c.JSON(http.StatusOK, MessageResponse{
 		Success: true,
 		Message: "Reset password successfully",
+	})
+}
+
+func RefreshToken(c *gin.Context) {
+	var request RequestRefreshToken
+
+	if err := c.BindJSON(&request); err != nil {
+		appError := errorModels.NewAppError(err, errorModels.ValidationError)
+		_ = c.Error(appError)
+		return
+	}
+
+	accessToken, err := jwt.Parse(request.AccessToken, func(token *jwt.Token) (interface{}, error) {
+		return []byte(config.ConfigApp.JwtConfig.SecretAccessToken), nil
+	})
+
+	if errors.Is(err, jwt.ErrTokenMalformed) || errors.Is(err, jwt.ErrSignatureInvalid) {
+		appError := errorModels.NewAppError(errors.New("access token invalid"), errorModels.NotFound)
+		_ = c.Error(appError)
+		return
+	}
+
+	_, err = jwt.Parse(request.RefreshToken, func(token *jwt.Token) (interface{}, error) {
+		return []byte(config.ConfigApp.JwtConfig.SecretRefreshToken), nil
+	})
+
+	if err != nil {
+		appError := errorModels.NewAppError(errors.New("refresh token invalid"), errorModels.NotFound)
+		_ = c.Error(appError)
+		return
+	}
+
+	_, errQuery := models.GetTokenByValueAndType(request.RefreshToken, errorModels.RefreshToken)
+
+	if errQuery != nil {
+		appError := errorModels.NewAppError(errQuery, errorModels.NotFound)
+		_ = c.Error(appError)
+		return
+	}
+
+	claims := accessToken.Claims.(jwt.MapClaims)
+	userID := int(claims["payload"].(map[string]interface{})["user_id"].(float64))
+
+	payload := services.TokenPayload{
+		UserID: userID,
+	}
+
+	newAccessToken, _ := services.SignToken(constant.AccessToken, payload)
+
+	if err != nil {
+		appError := errorModels.NewAppError(err, errorModels.ValidationError)
+		c.Error(appError)
+		return
+	}
+
+	c.JSON(http.StatusOK, MessageResponse{
+		Success: true,
+		Data:    newAccessToken,
 	})
 }

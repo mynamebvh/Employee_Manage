@@ -2,6 +2,8 @@ package user
 
 import (
 	"errors"
+	"fmt"
+	"math/rand"
 	"net/http"
 	"strconv"
 
@@ -99,7 +101,7 @@ func CreateUser(c *gin.Context) {
 	}
 
 	user := models.User{
-		EmployeeCode: request.EmployeeCode,
+		EmployeeCode: fmt.Sprintf("NV%d", rand.Intn(5000-1)+1),
 		FullName:     request.FullName,
 		Password:     request.Password,
 		Phone:        request.Phone,
@@ -149,20 +151,21 @@ func UpdateUserByID(c *gin.Context) {
 		return
 	}
 
-	// errValidate := updateValidation(requestMap)
+	errValidate := updateValidation(requestMap)
 
-	// if errValidate != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{
-	// 		"success": false,
-	// 		"error":   errValidate,
-	// 	})
-	// 	return
-	// }
+	if errValidate != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"error":   errValidate,
+		})
+		return
+	}
 
 	user, err := models.UpdateUserByID(userID, requestMap)
 
 	if err != nil {
 		c.Error(err)
+
 		return
 	}
 

@@ -5,7 +5,6 @@ import (
 	modelErrors "employee_manage/constant"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"time"
 )
 
@@ -19,8 +18,18 @@ type Token struct {
 	CreatedAt time.Time  `json:"created_at,omitempty" gorm:"autoCreateTime:mili"`
 }
 
+func GetTokenByValueAndType(value string, typeToken string) (token Token, err error) {
+	err = db.DB.Where("value = ? AND type = ?", value, typeToken).Find(&token).Error
+
+	if token.ID == 0 {
+		err = modelErrors.NewAppError(errors.New("refresh token not found"), modelErrors.NotFound)
+		return
+	}
+
+	return
+}
+
 func CreateToken(token *Token) (err error) {
-	fmt.Println("token", token)
 	err = db.DB.Create(token).Error
 
 	if err != nil {

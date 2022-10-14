@@ -41,6 +41,34 @@ definitions:
     required:
     - email
     type: object
+  department.MessageResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  department.NewDepartment:
+    properties:
+      address:
+        example: Tầng 3
+        type: string
+      department_code:
+        example: D5
+        type: string
+      name:
+        example: Phòng D5
+        type: string
+      status:
+        example: true
+        type: boolean
+    required:
+    - address
+    - department_code
+    - name
+    - status
+    type: object
   dto.QueryResultGetMe:
     properties:
       address:
@@ -61,6 +89,19 @@ definitions:
         type: string
       user_id:
         type: integer
+    type: object
+  models.Department:
+    properties:
+      address:
+        type: string
+      department_code:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      status:
+        type: boolean
     type: object
   models.User:
     properties:
@@ -104,9 +145,6 @@ definitions:
       email:
         example: mynamebvh@gmail.com
         type: string
-      employee_code:
-        example: "001"
-        type: string
       full_name:
         example: Bui Viet Hoang
         type: string
@@ -127,7 +165,6 @@ definitions:
     - birthday
     - department_id
     - email
-    - employee_code
     - full_name
     - gender
     - password
@@ -249,6 +286,115 @@ paths:
       summary: Send code to mail
       tags:
       - auth
+  /departments:
+    post:
+      consumes:
+      - application/json
+      description: Create new department on the system
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/department.NewDepartment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Department'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/department.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/department.MessageResponse'
+      summary: Create new department
+      tags:
+      - department
+  /departments/{department_id}:
+    delete:
+      description: Delete department by ID on the system
+      parameters:
+      - description: id of department
+        in: path
+        name: department_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/department.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/department.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/department.MessageResponse'
+      summary: Delete department by ID
+      tags:
+      - department
+    get:
+      description: Get department by ID on the system
+      parameters:
+      - description: id of department
+        in: path
+        name: department_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Department'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/department.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/department.MessageResponse'
+      summary: Get department by ID
+      tags:
+      - department
+    put:
+      description: Update department by ID on the system
+      parameters:
+      - description: id of department
+        in: path
+        name: department_id
+        required: true
+        type: integer
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/department.NewDepartment'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Department'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/department.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/department.MessageResponse'
+      summary: Update department by ID
+      tags:
+      - department
   /users:
     post:
       consumes:

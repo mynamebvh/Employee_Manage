@@ -35,5 +35,9 @@ func ApplicationV1Router(router *gin.Engine) {
 		// User route
 		v1User := v1.Group("/users", middlewares.Protect())
 		userRoute(v1User)
+
+		// Department route
+		v1Department := v1.Group("/departments", middlewares.Protect())
+		departmentRoute(v1Department)
 	}
 }

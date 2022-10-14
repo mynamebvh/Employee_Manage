@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	errorModels "employee_manage/constant"
@@ -43,28 +44,25 @@ func validateStructChangePassword(rPassword RequestChangePassword) (errValidate 
 	return
 }
 
+func IsRFC3339Date(fl validator.FieldLevel) bool {
+	RFC3339DateRegexString := "^((?:(\\d{4}-\\d{2}-\\d{2})T(\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?))(Z|[\\+-]\\d{2}:\\d{2})?)$"
+	RFC3339DateRegex := regexp.MustCompile(RFC3339DateRegexString)
+
+	return RFC3339DateRegex.MatchString(fl.Field().String())
+}
+
 func updateValidation(request map[string]interface{}) (errValidate []errorModels.ErrorValidate) {
-
-	for k, v := range request {
-		if v == "" {
-			errValidate = append(errValidate, errorModels.ErrorValidate{
-				Field:   strings.ToLower(k),
-				Message: fmt.Sprintf("%s cannot be empty", strings.ToLower(k)),
-			})
-		}
-	}
-
 	validationMap := map[string]string{
-		"employee_code": "omitempty,gt=3,lt=100",
-		"full_name":     "omitempty,gt=3,lt=100",
-		"phone":         "omitempty,gt=3,lt=100",
-		"email":         "omitempty,gt=3,lt=100",
-		"gender":        "boolean",
-		"birthday":      "datetime",
-		"address":       "gt=3",
+		"full_name": "required,gt=3,lt=100",
+		"phone":     "required,gt=3,lt=100",
+		"email":     "required,email,gt=3,lt=100",
+		"gender":    "required,boolean",
+		"birthday":  "required,RFC3339Date",
+		"address":   "required,gt=3",
 	}
 
 	validate := validator.New()
+	validate.RegisterValidation("RFC3339Date", IsRFC3339Date)
 	err := validate.RegisterValidation("update_validation", func(fl validator.FieldLevel) bool {
 		m, ok := fl.Field().Interface().(map[string]interface{})
 		if !ok {

@@ -4,6 +4,7 @@ import (
 	"employee_manage/config"
 	"employee_manage/models"
 	"net/http"
+	"strconv"
 	"strings"
 
 	auth "employee_manage/controllers/auth"
@@ -56,10 +57,25 @@ func ProtectRole(roles []string) gin.HandlerFunc {
 
 		role, _ := models.GetRole(&user, userID)
 
+		if role == "user" {
+			c.JSON(http.StatusForbidden, auth.MessageResponse{
+				Success: false,
+				Message: "You do not have permission to access this resource",
+			})
+			c.Abort()
+		}
+
 		for _, value := range roles {
-			if role == value {
+			if role == value && role != "manager" {
 				c.Next()
 				return
+			} else if role == value && role == "manager" {
+				staffID, _ := strconv.Atoi(c.Param("id"))
+				if models.CheckUserInDepartment(userID, staffID) {
+					c.Next()
+					return
+				}
+				break
 			}
 		}
 

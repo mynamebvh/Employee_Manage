@@ -7,6 +7,7 @@ import (
 	"employee_manage/utils"
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"time"
 
@@ -21,7 +22,7 @@ type User struct {
 	Phone        string    `json:"phone" gorm:"not null;unique"`
 	Email        string    `json:"email" gorm:"not null;unique"`
 	Gender       bool      `json:"gender" gorm:"not null"`
-	Birthday     time.Time `json:"birthday" gorm:"not null"`
+	Birthday     time.Time `json:"birthday"`
 	Address      string    `json:"address" gorm:"not null"`
 	Password     string    `json:"-" gorm:"not null"`
 	DepartmentID int       `json:"department_id" gorm:"not null;column:department_id" `
@@ -118,9 +119,24 @@ func GetRole(user *User, id int) (role string, err error) {
 			"roles.name",
 		).
 		Where("users.id = ?", id).
-		Joins("left join roles on users.role_id = roles.id").Scan(&role)
+		Joins("left join roles on users.role_id = roles.id").
+		Scan(&role)
 
 	return
+}
+
+func CheckUserInDepartment(managerID int, userID int) bool {
+	var id int
+	queryGetDepartmentID := db.DB.Model(UserDepartment{}).
+		Select("department_id").
+		Where("user_id = ?", managerID)
+
+	db.DB.Model(User{}).
+		Select("id").
+		Where("id = ? AND department_id = (?)", userID, queryGetDepartmentID).
+		Scan(&id)
+
+	return id != 0
 }
 
 func GetUserByID(user *User, id int) (err error) {
@@ -167,6 +183,8 @@ func UpdateUserByID(id int, userMap map[string]interface{}) (user User, err erro
 		if err != nil {
 			return
 		}
+
+		fmt.Println("na ni", newError.Number)
 		switch newError.Number {
 		case 1062:
 			err = modelErrors.NewAppErrorWithType(modelErrors.ResourceAlreadyExists)
@@ -178,6 +196,12 @@ func UpdateUserByID(id int, userMap map[string]interface{}) (user User, err erro
 	}
 
 	err = db.DB.Where("id = ?", id).First(&user).Error
+
+	if err != nil {
+		err = modelErrors.NewAppErrorWithType(modelErrors.NotFound)
+		return
+	}
+
 	return
 }
 

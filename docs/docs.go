@@ -162,6 +162,171 @@ const docTemplate = `{
                 }
             }
         },
+        "/departments": {
+            "post": {
+                "description": "Create new department on the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "department"
+                ],
+                "summary": "Create new department",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/department.NewDepartment"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Department"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/department.MessageResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/department.MessageResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/departments/{department_id}": {
+            "get": {
+                "description": "Get department by ID on the system",
+                "tags": [
+                    "department"
+                ],
+                "summary": "Get department by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id of department",
+                        "name": "department_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Department"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/department.MessageResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/department.MessageResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update department by ID on the system",
+                "tags": [
+                    "department"
+                ],
+                "summary": "Update department by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id of department",
+                        "name": "department_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/department.NewDepartment"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Department"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/department.MessageResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/department.MessageResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete department by ID on the system",
+                "tags": [
+                    "department"
+                ],
+                "summary": "Delete department by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id of department",
+                        "name": "department_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/department.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/department.MessageResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/department.MessageResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "post": {
                 "description": "Create new user on the system",
@@ -460,6 +625,45 @@ const docTemplate = `{
                 }
             }
         },
+        "department.MessageResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "department.NewDepartment": {
+            "type": "object",
+            "required": [
+                "address",
+                "department_code",
+                "name",
+                "status"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "Tầng 3"
+                },
+                "department_code": {
+                    "type": "string",
+                    "example": "D5"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Phòng D5"
+                },
+                "status": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
         "dto.QueryResultGetMe": {
             "type": "object",
             "properties": {
@@ -489,6 +693,26 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.Department": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "department_code": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "boolean"
                 }
             }
         },
@@ -542,7 +766,6 @@ const docTemplate = `{
                 "birthday",
                 "department_id",
                 "email",
-                "employee_code",
                 "full_name",
                 "gender",
                 "password",
@@ -565,10 +788,6 @@ const docTemplate = `{
                 "email": {
                     "type": "string",
                     "example": "mynamebvh@gmail.com"
-                },
-                "employee_code": {
-                    "type": "string",
-                    "example": "001"
                 },
                 "full_name": {
                     "type": "string",
