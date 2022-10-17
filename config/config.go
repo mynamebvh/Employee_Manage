@@ -1,16 +1,20 @@
 package config
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 )
 
 // DBConfig represents db configuration
-type DBConfig struct {
+type MySQLConfig struct {
 	Hostname string
 	Port     string
 	Username string
 	DBName   string
+	Password string
+}
+
+type RedisConfig struct {
+	Address  string
 	Password string
 }
 
@@ -20,11 +24,19 @@ type JWTConfig struct {
 	SecretRefreshToken  string
 	ExpiredRefreshToken int
 }
-
+type MailConfig struct {
+	SMTP     string
+	Email    string
+	Port     int
+	Password string
+}
 type ConfigApplication struct {
-	ServerPort string
-	DbConfig   DBConfig
-	JwtConfig  JWTConfig
+	Environment string
+	ServerPort  string
+	MySQL       MySQLConfig
+	JWT         JWTConfig
+	Redis       RedisConfig
+	Mail        MailConfig
 }
 
 var ConfigApp ConfigApplication
@@ -39,25 +51,7 @@ func LoadEnv() (err error) {
 
 	ConfigApp.ServerPort = viper.GetString("ServerPort")
 
-	envDB := viper.GetStringMap("Databases.MYSQL")
-	envJWT := viper.GetStringMap("JWT")
+	err = viper.Unmarshal(&ConfigApp)
 
-	var dbConfig DBConfig
-	var jwtConfig JWTConfig
-
-	err = mapstructure.Decode(envDB, &dbConfig)
-
-	if err != nil {
-		return
-	}
-
-	err = mapstructure.Decode(envJWT, &jwtConfig)
-
-	if err != nil {
-		return
-	}
-
-	ConfigApp.DbConfig = dbConfig
-	ConfigApp.JwtConfig = jwtConfig
 	return
 }

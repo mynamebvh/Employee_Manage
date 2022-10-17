@@ -26,6 +26,12 @@ services:
     networks:
       - go-network
 
+  redis:
+    image: redis:7
+    ports:
+      - '6382:6379'
+    command: redis-server --requirepass !CnJb%IcJqew
+    
 volumes:
   dbdata:
 

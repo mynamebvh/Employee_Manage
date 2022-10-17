@@ -7,7 +7,6 @@ import (
 	"employee_manage/utils"
 	"encoding/json"
 	"errors"
-	"fmt"
 
 	"time"
 
@@ -184,7 +183,6 @@ func UpdateUserByID(id int, userMap map[string]interface{}) (user User, err erro
 			return
 		}
 
-		fmt.Println("na ni", newError.Number)
 		switch newError.Number {
 		case 1062:
 			err = modelErrors.NewAppErrorWithType(modelErrors.ResourceAlreadyExists)

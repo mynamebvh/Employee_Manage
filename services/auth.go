@@ -27,11 +27,11 @@ func SignToken(tokenType string, payload TokenPayload) (tokenStruct TokenStruct,
 	var secret string
 
 	if tokenType == constant.AccessToken {
-		expired = config.ConfigApp.JwtConfig.ExpiredAccessToken
-		secret = config.ConfigApp.JwtConfig.SecretAccessToken
+		expired = config.ConfigApp.JWT.ExpiredAccessToken
+		secret = config.ConfigApp.JWT.SecretAccessToken
 	} else {
-		expired = config.ConfigApp.JwtConfig.ExpiredRefreshToken
-		secret = config.ConfigApp.JwtConfig.SecretRefreshToken
+		expired = config.ConfigApp.JWT.ExpiredRefreshToken
+		secret = config.ConfigApp.JWT.SecretRefreshToken
 	}
 
 	claims := MyCustomClaims{

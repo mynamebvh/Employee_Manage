@@ -39,5 +39,8 @@ func ApplicationV1Router(router *gin.Engine) {
 		// Department route
 		v1Department := v1.Group("/departments", middlewares.Protect())
 		departmentRoute(v1Department)
+
+		v1Calendar := v1.Group("/calendars", middlewares.Protect())
+		calendarRoute(v1Calendar)
 	}
 }

@@ -9,6 +9,7 @@ import (
 
 	errorModels "employee_manage/constant"
 	"employee_manage/models"
+	"employee_manage/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,9 +25,7 @@ import (
 func GetMe(c *gin.Context) {
 	var user models.User
 
-	payload := c.GetStringMap("payload")["user_id"].(float64)
-
-	userID := int(payload)
+	userID := utils.GetUserIDByContext(c)
 
 	data, err := models.GetMe(&user, userID)
 
@@ -198,7 +197,10 @@ func DeleteUserByID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "user deleted successfully"})
+	c.JSON(http.StatusOK, MessageResponse{
+		Success: true,
+		Message: "user deleted successfully",
+	})
 }
 
 // ChangePassword godoc

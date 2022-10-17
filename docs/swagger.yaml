@@ -9,6 +9,7 @@ definitions:
     type: object
   auth.MessageResponse:
     properties:
+      data: {}
       message:
         type: string
       success:
@@ -40,6 +41,14 @@ definitions:
         type: string
     required:
     - email
+    type: object
+  calendar.MessageResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      success:
+        type: boolean
     type: object
   department.MessageResponse:
     properties:
@@ -286,6 +295,52 @@ paths:
       summary: Send code to mail
       tags:
       - auth
+  /calendars/checkin:
+    post:
+      consumes:
+      - application/json
+      description: Checkin
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/calendar.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/calendar.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/calendar.MessageResponse'
+      summary: Checkin
+      tags:
+      - calendar
+  /calendars/checkout:
+    post:
+      consumes:
+      - application/json
+      description: Checkout
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/calendar.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/calendar.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/calendar.MessageResponse'
+      summary: Checkout
+      tags:
+      - calendar
   /departments:
     post:
       consumes:

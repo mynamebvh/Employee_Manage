@@ -26,7 +26,7 @@ func GormOpen() (gormDB *gorm.DB, err error) {
 		},
 	)
 
-	config := ConfigApp.DbConfig
+	config := ConfigApp.MySQL
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", config.Username, config.Password, config.Hostname, config.Port, config.DBName)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger: newLogger,

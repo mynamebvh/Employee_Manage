@@ -6,6 +6,7 @@ import (
 	"employee_manage/models"
 	"employee_manage/services"
 	"errors"
+	"fmt"
 	"net/http"
 
 	errorModels "employee_manage/constant"
@@ -136,7 +137,11 @@ func SendCodeResetPassword(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, code)
+	services.SendMail(user.Email, "Forget passowrd", fmt.Sprintf("Mã bí mật của bạn là: %s", code))
+	c.JSON(http.StatusOK, MessageResponse{
+		Success: true,
+		Message: "submitted successfully",
+	})
 }
 
 // ResetPassword godoc
@@ -191,7 +196,7 @@ func RefreshToken(c *gin.Context) {
 	}
 
 	accessToken, err := jwt.Parse(request.AccessToken, func(token *jwt.Token) (interface{}, error) {
-		return []byte(config.ConfigApp.JwtConfig.SecretAccessToken), nil
+		return []byte(config.ConfigApp.JWT.SecretAccessToken), nil
 	})
 
 	if errors.Is(err, jwt.ErrTokenMalformed) || errors.Is(err, jwt.ErrSignatureInvalid) {
@@ -201,7 +206,7 @@ func RefreshToken(c *gin.Context) {
 	}
 
 	_, err = jwt.Parse(request.RefreshToken, func(token *jwt.Token) (interface{}, error) {
-		return []byte(config.ConfigApp.JwtConfig.SecretRefreshToken), nil
+		return []byte(config.ConfigApp.JWT.SecretRefreshToken), nil
 	})
 
 	if err != nil {

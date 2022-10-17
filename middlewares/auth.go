@@ -30,7 +30,7 @@ func Protect() gin.HandlerFunc {
 		tokenString = strings.Split(tokenString, " ")[1]
 
 		token, _ := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			return []byte(config.ConfigApp.JwtConfig.SecretAccessToken), nil
+			return []byte(config.ConfigApp.JWT.SecretAccessToken), nil
 		})
 
 		if token.Valid {

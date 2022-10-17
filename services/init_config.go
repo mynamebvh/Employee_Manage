@@ -22,4 +22,9 @@ func InitialGinConfig(router *gin.Engine) {
 		panic(fmt.Errorf("fatal error in database file: %s", err))
 	}
 
+	config.Rdb, err = config.ConnectRedis()
+
+	if err != nil {
+		panic(fmt.Errorf("error connect redis: %s", err))
+	}
 }

@@ -3,6 +3,7 @@ package models
 import (
 	db "employee_manage/config"
 	modelErrors "employee_manage/constant"
+	"employee_manage/models/dto"
 	"encoding/json"
 	"time"
 
@@ -18,6 +19,22 @@ type Department struct {
 	User           User      `json:"-"`
 	CreatedAt      time.Time `json:"-" gorm:"autoCreateTime:mili"`
 	UpdatedAt      time.Time `json:"-" gorm:"autoUpdateTime:mili"`
+}
+
+func GetUsersByDepartmentID(id int) (users []dto.QueryGetUsersByDepartmentID, err error) {
+	err = db.DB.Table("users as u").
+		Select("u.full_name", "u.employee_code", "u.phone", "u.email", "u.gender", "u.address", "d.name").
+		Joins(`left join departments as d on u.department_id = d.id 
+			AND u.department_id = ?
+			`, id).
+		Where("u.role_id = 3").
+		Scan(&users).Error
+
+	if err != nil {
+		return
+	}
+
+	return
 }
 
 func CreateDepartment(de *Department) (err error) {

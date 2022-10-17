@@ -162,6 +162,76 @@ const docTemplate = `{
                 }
             }
         },
+        "/calendars/checkin": {
+            "post": {
+                "description": "Checkin",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "calendar"
+                ],
+                "summary": "Checkin",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/calendar.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/calendar.MessageResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/calendar.MessageResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/calendars/checkout": {
+            "post": {
+                "description": "Checkout",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "calendar"
+                ],
+                "summary": "Checkout",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/calendar.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/calendar.MessageResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/calendar.MessageResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/departments": {
             "post": {
                 "description": "Create new department on the system",
@@ -577,6 +647,7 @@ const docTemplate = `{
         "auth.MessageResponse": {
             "type": "object",
             "properties": {
+                "data": {},
                 "message": {
                     "type": "string"
                 },
@@ -622,6 +693,18 @@ const docTemplate = `{
                 "email": {
                     "type": "string",
                     "example": "mynamebvh@gmail.com"
+                }
+            }
+        },
+        "calendar.MessageResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
                 }
             }
         },
