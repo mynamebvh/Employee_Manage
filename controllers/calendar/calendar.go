@@ -4,7 +4,9 @@ import (
 	"employee_manage/models"
 	"employee_manage/services"
 	"employee_manage/utils"
+	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -81,15 +83,24 @@ func Checkout(c *gin.Context) {
 }
 
 func GetWorkingTimeInMonth(c *gin.Context) {
+	t := time.Now()
 
-	result, err := models.GetWorkingTimeInMonth(10)
+	monthStr := c.DefaultQuery("month", fmt.Sprintf("%d", t.Month()))
+	month, err := strconv.Atoi(monthStr)
 
 	if err != nil {
 		_ = c.Error(err)
 		return
 	}
 
-	if err = services.ExportExcelWorkingTime(10, result); err != nil {
+	result, err := models.GetWorkingTimeInMonth(month)
+
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	if err = services.ExportExcelWorkingTime(month, result); err != nil {
 		_ = c.Error(err)
 		return
 	}

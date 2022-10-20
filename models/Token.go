@@ -16,6 +16,7 @@ type Token struct {
 	Expired   *time.Time `json:"expired"`
 	UserID    *int       `gorm:"column:user_id" json:"user_id"`
 	CreatedAt time.Time  `json:"created_at,omitempty" gorm:"autoCreateTime:mili"`
+	UpdatedAt time.Time  `json:"-" gorm:"autoUpdateTime:mili"`
 }
 
 func GetTokenByValueAndType(value string, typeToken string) (token Token, err error) {
@@ -56,12 +57,12 @@ func CheckToken(code string) (token Token, err error) {
 	err = db.DB.Where("value = ?", code).Find(&token).Error
 
 	if token.ID == 0 {
-		err = modelErrors.NewAppError(errors.New("Token not valid"), "NOT_VALID")
+		err = modelErrors.NewAppError(errors.New("code not valid"), "NOT_VALID")
 		return
 	}
 
 	if time.Now().After(*token.Expired) {
-		err = modelErrors.NewAppError(errors.New("Token expired"), "NOT_VALID")
+		err = modelErrors.NewAppError(errors.New("code expired"), "NOT_VALID")
 		return
 	}
 

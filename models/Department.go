@@ -24,7 +24,7 @@ type Department struct {
 func GetUsersByDepartmentID(id int) (users []dto.QueryGetUsersByDepartmentID, err error) {
 	err = db.DB.Table("users as u").
 		Select("u.full_name", "u.employee_code", "u.phone", "u.email", "u.gender", "u.address", "d.name").
-		Joins(`left join departments as d on u.department_id = d.id 
+		Joins(`inner join departments as d on u.department_id = d.id 
 			AND u.department_id = ?
 			`, id).
 		Where("u.role_id = 3").

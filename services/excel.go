@@ -36,7 +36,7 @@ func ExportExcel(deName string, users []dto.QueryGetUsersByDepartmentID) (err er
 		index++
 	}
 
-	if err := f.SaveAs(fmt.Sprintf("./files/%s.xlsx", deName)); err != nil {
+	if err := f.SaveAs(fmt.Sprintf("./files/department_%s.xlsx", deName)); err != nil {
 		return modelErrors.NewAppError(err, modelErrors.ValidationError)
 	}
 
@@ -63,7 +63,7 @@ func ExportExcelWorkingTime(month int, data []dto.QueryGetWorkingTimeInMonth) (e
 		index++
 	}
 
-	if err := f.SaveAs(fmt.Sprintf("./files/working-time%d.xlsx", month)); err != nil {
+	if err := f.SaveAs(fmt.Sprintf("./files/working_month_%d.xlsx", month)); err != nil {
 		return modelErrors.NewAppError(err, modelErrors.ValidationError)
 	}
 

@@ -185,16 +185,30 @@ func DeleteDepartmentByID(c *gin.Context) {
 }
 
 func ExportExcel(c *gin.Context) {
+	departmentID := c.GetStringMap("role")["department_id"].(int)
+	users, _ := models.GetUsersByDepartmentID(departmentID)
+
+	if err := services.ExportExcel(strconv.Itoa(departmentID), users); err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, MessageResponse{
+		Success: true,
+		Message: "Export success",
+	})
+}
+
+func ExportExcelByDepartmentID(c *gin.Context) {
 	departmentID, err := strconv.Atoi(c.Param("id"))
 
 	if err != nil {
-		appError := errorModels.NewAppError(errors.New("department id is invalid"), errorModels.ValidationError)
+		appError := errorModels.NewAppError(errors.New("user id is invalid"), errorModels.ValidationError)
 		c.Error(appError)
 		return
 	}
 
 	users, _ := models.GetUsersByDepartmentID(departmentID)
-
 	if err := services.ExportExcel(strconv.Itoa(departmentID), users); err != nil {
 		c.Error(err)
 		return

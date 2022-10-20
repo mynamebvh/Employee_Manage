@@ -52,14 +52,16 @@ func ConsumerResetPassword(ch *amqp.Channel) {
 
 	go func() {
 		for message := range messages {
-			// For example, show received message in a console.
-			var data services.DataQueue
-			json.Unmarshal(message.Body, &data)
+			go func(message amqp.Delivery) {
+				var data services.DataQueue
+				json.Unmarshal(message.Body, &data)
 
-			log.Printf(" > Reset password : %s\n", data)
+				log.Printf(" > Reset password : %s\n", data)
 
-			models.ResetPassword(data.Email, "hoangdz1")
-			services.SendMail(data.Email, "Reset password", fmt.Sprintf("New password: %s", "hoangdz"))
+				models.ResetPassword(data.Email, "hoangdz1")
+				services.SendMail(data.Email, "Reset password", fmt.Sprintf("New password: %s", "hoangdz"))
+			}(message)
+
 		}
 	}()
 }
@@ -80,7 +82,6 @@ func ConsumerExcel(ch *amqp.Channel) {
 
 	go func() {
 		for message := range messages {
-			// For example, show received message in a console.
 			log.Printf(" > Received message: %s\n", message.Body)
 
 			data, err := services.ReadExcelResetPassword(string(message.Body))
@@ -93,7 +94,6 @@ func ConsumerExcel(ch *amqp.Channel) {
 				body, _ := json.Marshal(d)
 				config.Publish("reset-password", string(body))
 			}
-
 		}
 	}()
 }

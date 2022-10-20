@@ -15,6 +15,5 @@ type RequestResetPassword struct {
 }
 
 type RequestRefreshToken struct {
-	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 }

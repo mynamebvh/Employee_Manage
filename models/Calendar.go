@@ -18,12 +18,13 @@ type Calendar struct {
 
 func CheckValidCheckin(userID int) (err error) {
 	var count int
+	timeNow := time.Now().Format("2006-01-02 15:04:05.000")
 	db.DB.
 		Raw(
 			`SELECT COUNT(id) 
 			FROM calendars 
 			WHERE calendars.user_id = ?
-			AND DATEDIFF(calendars.checkin_time, "2022-10-17 14:37:43.560") = 0`, userID).Scan(&count)
+			AND DATEDIFF(calendars.checkin_time, ?) = 0`, userID, timeNow).Scan(&count)
 
 	if count > 0 {
 		err = errors.New("have you checkin in today?")

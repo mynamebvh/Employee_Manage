@@ -5,19 +5,22 @@ import (
 	modelErrors "employee_manage/constant"
 	"employee_manage/models/dto"
 	"encoding/json"
+	"time"
 
 	"gorm.io/gorm"
 )
 
 type Request struct {
-	ID         int    `gorm:"primaryKey" json:"id" `
-	Type       string `json:"type"`
-	Content    string `json:"content"`
-	Status     string `json:"status"`
-	UserID     int    `gorm:"not null;column:user_id" json:"user_id"`
-	User       User   `json:"-"`
-	ApprovedBy *int   `gorm:"column:approved_by" json:"approved_by"`
-	Manager    User   `gorm:"foreignKey:ApprovedBy" json:"-"`
+	ID         int       `gorm:"primaryKey" json:"id" `
+	Type       string    `json:"type"`
+	Content    string    `json:"content"`
+	Status     string    `json:"status"`
+	UserID     int       `gorm:"not null;column:user_id" json:"user_id"`
+	User       User      `json:"-"`
+	ApprovedBy *int      `gorm:"column:approved_by" json:"approved_by"`
+	Manager    User      `gorm:"foreignKey:ApprovedBy" json:"-"`
+	CreatedAt  time.Time `json:"create_at" gorm:"autoCreateTime:mili"`
+	UpdatedAt  time.Time `json:"-" gorm:"autoUpdateTime:mili"`
 }
 
 func CreateRequest(re *Request) (err error) {
@@ -63,7 +66,8 @@ func GetRequests(role map[string]interface{}, count *int64, limit int, page int)
 			return
 		}
 	} else {
-		subQuery := db.DB.Table("users").Select("id").Where("department_id = 1")
+		departmentID := role["department_id"].(int)
+		subQuery := db.DB.Table("users").Select("id").Where("department_id = ?", departmentID)
 
 		db.DB.Table("requests as rq").Where("user_id in (?)", subQuery).
 			Select("rq.type", "rq.content", "rq.status", "u.full_name as full_name", "u1.full_name as approved_by").
@@ -82,7 +86,8 @@ func GetRequests(role map[string]interface{}, count *int64, limit int, page int)
 
 func GetRequestByID(id int) (re dto.QueryGetRequest, err error) {
 	err = db.DB.Table("requests as rq").
-		Select("rq.type", "rq.content", "u.full_name as fullname", "a.full_name as approved_by").
+		Select("rq.type", "rq.content", "u.full_name as full_name", "a.full_name as approved_by", "rq.status").
+		Where("rq.id = ?", id).
 		Joins("left join users as u on rq.user_id = u.id").
 		Joins("left join users as a on rq.approved_by = a.id").
 		Scan(&re).

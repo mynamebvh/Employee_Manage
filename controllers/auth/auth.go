@@ -193,17 +193,7 @@ func RefreshToken(c *gin.Context) {
 		return
 	}
 
-	accessToken, err := jwt.Parse(request.AccessToken, func(token *jwt.Token) (interface{}, error) {
-		return []byte(config.ConfigApp.JWT.SecretAccessToken), nil
-	})
-
-	if errors.Is(err, jwt.ErrTokenMalformed) || errors.Is(err, jwt.ErrSignatureInvalid) {
-		appError := errorModels.NewAppError(errors.New("access token invalid"), errorModels.NotFound)
-		_ = c.Error(appError)
-		return
-	}
-
-	_, err = jwt.Parse(request.RefreshToken, func(token *jwt.Token) (interface{}, error) {
+	refreshToken, err := jwt.Parse(request.RefreshToken, func(token *jwt.Token) (interface{}, error) {
 		return []byte(config.ConfigApp.JWT.SecretRefreshToken), nil
 	})
 
@@ -221,7 +211,7 @@ func RefreshToken(c *gin.Context) {
 		return
 	}
 
-	claims := accessToken.Claims.(jwt.MapClaims)
+	claims := refreshToken.Claims.(jwt.MapClaims)
 	userID := int(claims["payload"].(map[string]interface{})["user_id"].(float64))
 
 	payload := services.TokenPayload{
