@@ -13,9 +13,10 @@ func main() {
 
 	birthday, _ := time.Parse("2006-01-02 15:04:05.000 -0700", "2020-01-02 03:04:05.000 +0000")
 
-	admin := []models.User{
-		{ID: 1, FullName: "Admin", Phone: "0979150931", Email: "mynamebvh@gmail.com", Gender: true, Address: "HN", Password: "hoangdz", RoleID: 1, DepartmentID: 1, Birthday: birthday},
-		{ID: 2, FullName: "Manager", Phone: "0979150932", Email: "mynamebvh1@gmail.com", Gender: true, Address: "HN", Password: "hoangdz", RoleID: 2, DepartmentID: 1, Birthday: birthday},
+	users := []models.User{
+		{ID: 1, FullName: "Root", Phone: "0979150931", Email: "mynamebvh@gmail.com", Gender: true, Address: "HN", Password: "hoangdz", RoleID: 1, DepartmentID: 1, Birthday: birthday},
+		{ID: 2, FullName: "Manager D1", Phone: "0979150932", Email: "mynamebvh1@gmail.com", Gender: true, Address: "HN", Password: "hoangdz", RoleID: 2, DepartmentID: 1, Birthday: birthday},
+		{ID: 3, FullName: "Bui Viet Hoang", Phone: "0979150933", Email: "mynamebvh2@gmail.com", Gender: true, Address: "HN", Password: "hoangdz", RoleID: 3, DepartmentID: 1, Birthday: birthday},
 	}
 
 	roles := []models.Role{
@@ -45,7 +46,7 @@ func main() {
 
 	db.Create(&roles)
 	db.Create(&departments)
-	db.Create(&admin)
+	db.Create(&users)
 	db.Create(&userDepartments)
 
 	fmt.Println("========Seeder successful========")

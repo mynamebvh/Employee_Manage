@@ -45,8 +45,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	var user models.User
-	err := models.GetUserByEmail(&user, request.Email)
+	user, err := models.GetUserByEmail(request.Email)
 
 	if err != nil {
 		appError := errorModels.NewAppError(err, errorModels.ValidationError)
@@ -122,8 +121,7 @@ func SendCodeResetPassword(c *gin.Context) {
 		return
 	}
 
-	var user models.User
-	err := models.GetUserByEmail(&user, request.Email)
+	user, err := models.GetUserByEmail(request.Email)
 	if err != nil {
 		appError := errorModels.NewAppError(err, errorModels.ValidationError)
 		c.Error(appError)

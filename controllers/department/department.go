@@ -19,6 +19,7 @@ import (
 // @Success 200 {object} models.Department
 // @Failure 400 {object} MessageResponse
 // @Failure 500 {object} MessageResponse
+// @Security Authentication
 // @Router /departments/{department_id} [GET]
 func GetDepartmentByID(c *gin.Context) {
 	var department models.Department
@@ -56,6 +57,7 @@ func GetDepartmentByID(c *gin.Context) {
 // @Success 200 {object} models.Department
 // @Failure 400 {object} MessageResponse
 // @Failure 500 {object} MessageResponse
+// @Security Authentication
 // @Router /departments [POST]
 func CreateDepartment(c *gin.Context) {
 	var request NewDepartment
@@ -106,6 +108,7 @@ func CreateDepartment(c *gin.Context) {
 // @Success 200 {object} models.Department
 // @Failure 400 {object} MessageResponse
 // @Failure 500 {object} MessageResponse
+// @Security Authentication
 // @Router /departments/{department_id} [PUT]
 func UpdateDepartmentByID(c *gin.Context) {
 	departmentID, err := strconv.Atoi(c.Param("id"))
@@ -157,6 +160,7 @@ func UpdateDepartmentByID(c *gin.Context) {
 // @Success 200 {object} MessageResponse
 // @Failure 400 {object} MessageResponse
 // @Failure 500 {object} MessageResponse
+// @Security Authentication
 // @Router /departments/{department_id} [DELETE]
 func DeleteDepartmentByID(c *gin.Context) {
 	departmentID, err := strconv.Atoi(c.Param("id"))

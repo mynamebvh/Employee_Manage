@@ -18,6 +18,7 @@ import (
 // @Success 200 {object} MessageResponse
 // @Failure 400 {object} MessageResponse
 // @Failure 500 {object} MessageResponse
+// @Security Authentication
 // @Router /calendars/checkin [POST]
 func CheckIn(c *gin.Context) {
 	userID := utils.GetUserIDByContext(c)
@@ -49,6 +50,7 @@ func CheckIn(c *gin.Context) {
 // @Success 200 {object} MessageResponse
 // @Failure 400 {object} MessageResponse
 // @Failure 500 {object} MessageResponse
+// @Security Authentication
 // @Router /calendars/checkout [POST]
 func Checkout(c *gin.Context) {
 	userID := utils.GetUserIDByContext(c)

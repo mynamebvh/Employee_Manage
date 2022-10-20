@@ -37,6 +37,16 @@ func GetUsersByDepartmentID(id int) (users []dto.QueryGetUsersByDepartmentID, er
 	return
 }
 
+func GetDepartmentByRequestID(id int) (user User, err error) {
+	var request Request
+
+	db.DB.Model(&request).
+		Select("users.*").
+		Joins("left join users on requests.user_id = users.id and requests.id = ?", id).
+		Scan(&user)
+	return
+}
+
 func CreateDepartment(de *Department) (err error) {
 	err = db.DB.Create(de).Error
 

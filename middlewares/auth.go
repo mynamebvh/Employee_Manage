@@ -3,6 +3,7 @@ package middlewares
 import (
 	"employee_manage/config"
 	"employee_manage/models"
+	"employee_manage/utils"
 	"net/http"
 	"strconv"
 	"strings"
@@ -49,33 +50,59 @@ func Protect() gin.HandlerFunc {
 	}
 }
 
-func ProtectRole(roles []string) gin.HandlerFunc {
+func ProtectRole(roles []string, model string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var user models.User
-		payload := c.GetStringMap("payload")["user_id"].(float64)
-		userID := int(payload)
+
+		userID := utils.GetUserIDByContext(c)
 
 		role, _ := models.GetRole(&user, userID)
 
-		if role == "user" {
+		if role.Name == "user" {
 			c.JSON(http.StatusForbidden, auth.MessageResponse{
 				Success: false,
 				Message: "You do not have permission to access this resource",
 			})
 			c.Abort()
+			return
 		}
 
 		for _, value := range roles {
-			if role == value && role != "manager" {
+			if role.Name == value && role.Name != "manager" {
+				c.Set("role", map[string]interface{}{
+					"name":          role.Name,
+					"department_id": role.DepartmentID,
+				})
 				c.Next()
 				return
-			} else if role == value && role == "manager" {
-				staffID, _ := strconv.Atoi(c.Param("id"))
-				if models.CheckUserInDepartment(userID, staffID) {
-					c.Next()
+			} else if role.Name == value && role.Name == "manager" {
+				id, _ := strconv.Atoi(c.Param("id"))
+
+				isNext, err := models.CheckManageAccess(id, role.DepartmentID, model)
+				if err != nil {
+					c.JSON(http.StatusForbidden, auth.MessageResponse{
+						Success: false,
+						Message: "You do not have permission to access this resource",
+					})
+					c.Abort()
 					return
 				}
-				break
+
+				if isNext {
+					c.Set("role", map[string]interface{}{
+						"name":          role.Name,
+						"department_id": role.DepartmentID,
+					})
+					c.Next()
+					return
+				} else {
+					c.JSON(http.StatusForbidden, auth.MessageResponse{
+						Success: false,
+						Message: "You do not have permission to access this resource",
+					})
+					c.Abort()
+					return
+				}
 			}
 		}
 

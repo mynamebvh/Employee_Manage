@@ -83,18 +83,17 @@ func CreateUser(user *User) (err error) {
 	return
 }
 
-func (u *User) GetAllUser(users *[]User, limit int, offset int) (err error) {
+func (u *User) GetAllUser(limit int, offset int) (users *[]User, err error) {
 	err = db.DB.Limit(limit).Offset(offset).Find(users).Error
 
 	if err != nil {
-		return err
+		return
 	}
 
 	return
 }
 
 func GetMe(user *User, id int) (queryResult dto.QueryResultGetMe, err error) {
-
 	db.DB.Model(user).
 		Select(
 			"users.id",
@@ -112,12 +111,14 @@ func GetMe(user *User, id int) (queryResult dto.QueryResultGetMe, err error) {
 	return
 }
 
-func GetRole(user *User, id int) (role string, err error) {
+func GetRole(user *User, id int) (role dto.QueryCheckManageAccess, err error) {
 	db.DB.Model(user).
 		Select(
-			"roles.name",
+			"ud.department_id",
+			"name",
 		).
 		Where("users.id = ?", id).
+		Joins("left join user_departments as ud on users.id = ud.user_id").
 		Joins("left join roles on users.role_id = roles.id").
 		Scan(&role)
 
@@ -138,8 +139,8 @@ func CheckUserInDepartment(managerID int, userID int) bool {
 	return id != 0
 }
 
-func GetUserByID(user *User, id int) (err error) {
-	err = db.DB.First(user, id).Error
+func GetUserByID(id int) (user User, err error) {
+	err = db.DB.First(&user, id).Error
 
 	if err != nil {
 		switch err.Error() {
@@ -153,8 +154,8 @@ func GetUserByID(user *User, id int) (err error) {
 	return
 }
 
-func GetUserByEmail(user *User, email string) (err error) {
-	err = db.DB.Where("email=?", email).First(user).Error
+func GetUserByEmail(email string) (user User, err error) {
+	err = db.DB.Where("email=?", email).First(&user).Error
 
 	if err != nil {
 		switch err.Error() {

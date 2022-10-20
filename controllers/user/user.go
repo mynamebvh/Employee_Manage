@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"employee_manage/config"
 	errorModels "employee_manage/constant"
 	"employee_manage/models"
 	"employee_manage/utils"
@@ -21,6 +22,7 @@ import (
 // @Success 200 {object} dto.QueryResultGetMe
 // @Failure 400 {object} MessageResponse
 // @Failure 500 {object} MessageResponse
+// @Security Authentication
 // @Router /users/me [GET]
 func GetMe(c *gin.Context) {
 	var user models.User
@@ -46,10 +48,9 @@ func GetMe(c *gin.Context) {
 // @Success 200 {object} models.User
 // @Failure 400 {object} MessageResponse
 // @Failure 500 {object} MessageResponse
+// @Security Authentication
 // @Router /users/{user_id} [GET]
 func GetUserByID(c *gin.Context) {
-	var user models.User
-
 	userID, err := strconv.Atoi(c.Param("id"))
 
 	if err != nil {
@@ -58,7 +59,7 @@ func GetUserByID(c *gin.Context) {
 		return
 	}
 
-	err = models.GetUserByID(&user, userID)
+	user, err := models.GetUserByID(userID)
 
 	if err != nil {
 		appError := errorModels.NewAppError(err, errorModels.ValidationError)
@@ -79,6 +80,7 @@ func GetUserByID(c *gin.Context) {
 // @Success 200 {object} models.User
 // @Failure 400 {object} MessageResponse
 // @Failure 500 {object} MessageResponse
+// @Security Authentication
 // @Router /users [POST]
 func CreateUser(c *gin.Context) {
 	var request NewUser
@@ -131,6 +133,7 @@ func CreateUser(c *gin.Context) {
 // @Success 200 {object} models.User
 // @Failure 400 {object} MessageResponse
 // @Failure 500 {object} MessageResponse
+// @Security Authentication
 // @Router /users/{user_id} [PUT]
 func UpdateUserByID(c *gin.Context) {
 	userID, err := strconv.Atoi(c.Param("id"))
@@ -180,6 +183,7 @@ func UpdateUserByID(c *gin.Context) {
 // @Success 200 {object} MessageResponse
 // @Failure 400 {object} MessageResponse
 // @Failure 500 {object} MessageResponse
+// @Security Authentication
 // @Router /users/{user_id} [DELETE]
 func DeleteUserByID(c *gin.Context) {
 	userID, err := strconv.Atoi(c.Param("id"))
@@ -211,6 +215,7 @@ func DeleteUserByID(c *gin.Context) {
 // @Success 200 {object} MessageResponse
 // @Failure 400 {object} MessageResponse
 // @Failure 500 {object} MessageResponse
+// @Security Authentication
 // @Router /users/change-password [PUT]
 func ChangePassword(c *gin.Context) {
 	userID, err := strconv.Atoi(c.Param("id"))
@@ -221,8 +226,7 @@ func ChangePassword(c *gin.Context) {
 		return
 	}
 
-	var user models.User
-	err = models.GetUserByID(&user, userID)
+	user, err := models.GetUserByID(userID)
 
 	if err != nil {
 		appError := errorModels.NewAppError(err, errorModels.ValidationError)
@@ -256,5 +260,20 @@ func ChangePassword(c *gin.Context) {
 	c.JSON(http.StatusOK, MessageResponse{
 		Success: true,
 		Message: "Change password successfully",
+	})
+}
+
+func ResetPassWordQueue(c *gin.Context) {
+
+	err := config.Publish()
+
+	if err != nil {
+		appError := errorModels.NewAppError(err, errorModels.ValidationError)
+		_ = c.Error(appError)
+		return
+	}
+
+	c.JSON(http.StatusOK, MessageResponse{
+		Success: true,
 	})
 }

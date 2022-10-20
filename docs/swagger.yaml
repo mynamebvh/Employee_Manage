@@ -112,6 +112,21 @@ definitions:
       status:
         type: boolean
     type: object
+  models.Request:
+    properties:
+      approved_by:
+        type: integer
+      content:
+        type: string
+      id:
+        type: integer
+      status:
+        type: string
+      type:
+        type: string
+      user_id:
+        type: integer
+    type: object
   models.User:
     properties:
       address:
@@ -132,6 +147,35 @@ definitions:
         type: integer
       phone:
         type: string
+    type: object
+  request.MessageResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  request.NewRequest:
+    properties:
+      content:
+        type: string
+      type:
+        type: string
+    type: object
+  request.PaginationResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      page_current:
+        type: integer
+      page_size:
+        type: integer
+      page_total:
+        type: integer
+      success:
+        type: boolean
     type: object
   user.MessageResponse:
     properties:
@@ -315,6 +359,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/calendar.MessageResponse'
+      security:
+      - Authentication: []
       summary: Checkin
       tags:
       - calendar
@@ -450,6 +496,109 @@ paths:
       summary: Update department by ID
       tags:
       - department
+  /requests:
+    get:
+      description: Get list request
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/request.PaginationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/request.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/request.MessageResponse'
+      summary: Get list request
+      tags:
+      - request
+    post:
+      consumes:
+      - application/json
+      description: Create new request
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.NewRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Request'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/request.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/request.MessageResponse'
+      summary: Create new request
+      tags:
+      - request
+  /requests/{request_id}:
+    get:
+      description: Get request by id
+      parameters:
+      - description: id of request
+        in: path
+        name: request_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/request.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/request.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/request.MessageResponse'
+      summary: Get request by id
+      tags:
+      - request
+    put:
+      description: Update request by ID on the system
+      parameters:
+      - description: id of request
+        in: path
+        name: request_id
+        required: true
+        type: integer
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.NewRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Request'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/request.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/request.MessageResponse'
+      summary: Update request by ID
+      tags:
+      - request
   /users:
     post:
       consumes:
@@ -604,4 +753,10 @@ paths:
       summary: Get info user current
       tags:
       - user
+securityDefinitions:
+  Authentication:
+    description: Bearer token
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

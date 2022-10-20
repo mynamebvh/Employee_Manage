@@ -30,6 +30,11 @@ type MailConfig struct {
 	Port     int
 	Password string
 }
+
+type RabbitMQConfig struct {
+	Url string
+}
+
 type ConfigApplication struct {
 	Environment string
 	ServerPort  string
@@ -37,6 +42,7 @@ type ConfigApplication struct {
 	JWT         JWTConfig
 	Redis       RedisConfig
 	Mail        MailConfig
+	RabbitMQ    RabbitMQConfig
 }
 
 var ConfigApp ConfigApplication

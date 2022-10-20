@@ -13,6 +13,10 @@ import (
 // @version 1.0
 // @description Documentation's Employee Manager
 // @termsOfService http://swagger.io/terms/
+// @securitydefinitions.apikey Authentication
+// @in header
+// @name Authorization
+// @description Bearer token
 
 // @contact.name Bui Viet Hoang
 // @contact.url
@@ -42,5 +46,8 @@ func ApplicationV1Router(router *gin.Engine) {
 
 		v1Calendar := v1.Group("/calendars", middlewares.Protect())
 		calendarRoute(v1Calendar)
+
+		v1Request := v1.Group("/requests", middlewares.Protect())
+		requestRoute(v1Request)
 	}
 }
