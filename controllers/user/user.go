@@ -265,7 +265,15 @@ func ChangePassword(c *gin.Context) {
 
 func ResetPassWordQueue(c *gin.Context) {
 
-	err := config.Publish()
+	file, _ := c.FormFile("file")
+
+	err := c.SaveUploadedFile(file, fmt.Sprintf("./files/%s", file.Filename))
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	err = config.Publish("excel", fmt.Sprintf("./files/%s", file.Filename))
 
 	if err != nil {
 		appError := errorModels.NewAppError(err, errorModels.ValidationError)

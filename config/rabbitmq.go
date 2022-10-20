@@ -8,7 +8,7 @@ import (
 
 var ctx = context.TODO()
 
-func Publish() (err error) {
+func Publish(queue string, body string) (err error) {
 	conn, err := amqp.Dial(ConfigApp.RabbitMQ.Url)
 	if err != nil {
 		return
@@ -22,18 +22,17 @@ func Publish() (err error) {
 	defer ch.Close()
 
 	q, err := ch.QueueDeclare(
-		"reset-password-queue", // name
-		false,                  // durable
-		false,                  // delete when unused
-		false,                  // exclusive
-		false,                  // no-wait
-		nil,                    // arguments
+		queue, // name
+		false, // durable
+		false, // delete when unused
+		false, // exclusive
+		false, // no-wait
+		nil,   // arguments
 	)
 	if err != nil {
 		return
 	}
 
-	body := "Golang is awesome - Keep Moving Forward!"
 	err = ch.PublishWithContext(
 		ctx,
 		"",     // exchange

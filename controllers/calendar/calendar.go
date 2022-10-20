@@ -2,6 +2,7 @@ package calendar
 
 import (
 	"employee_manage/models"
+	"employee_manage/services"
 	"employee_manage/utils"
 	"net/http"
 	"time"
@@ -77,4 +78,25 @@ func Checkout(c *gin.Context) {
 		Message: "Checkout Success",
 	})
 
+}
+
+func GetWorkingTimeInMonth(c *gin.Context) {
+
+	result, err := models.GetWorkingTimeInMonth(10)
+
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	if err = services.ExportExcelWorkingTime(10, result); err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, MessageResponse{
+		Success: true,
+		Message: "Success",
+		Data:    "",
+	})
 }

@@ -40,10 +40,10 @@ func GetUsersByDepartmentID(id int) (users []dto.QueryGetUsersByDepartmentID, er
 func GetDepartmentByRequestID(id int) (user User, err error) {
 	var request Request
 
-	db.DB.Model(&request).
+	err = db.DB.Model(&request).
 		Select("users.*").
 		Joins("left join users on requests.user_id = users.id and requests.id = ?", id).
-		Scan(&user)
+		Scan(&user).Error
 	return
 }
 
@@ -124,5 +124,38 @@ func DeleteDepartmentByID(id int) (err error) {
 		err = modelErrors.NewAppErrorWithType(modelErrors.NotFound)
 	}
 
+	return
+}
+
+func GetWorkingTimeInMonth(month int) (q []dto.QueryGetWorkingTimeInMonth, err error) {
+
+	err = db.DB.Raw(`SELECT
+	r.user_id,
+	users.full_name,
+	users.employee_code,
+	SEC_TO_TIME(r.sec) as hours,
+	r.days as days,
+	d.name as department_name
+	FROM
+	(
+	SELECT
+		user_id,
+		SUM(
+			TIME_TO_SEC(
+			TIMEDIFF( checkout_time, checkin_time ))) AS sec,
+		COUNT(user_id) as days
+	FROM
+		calendars AS c
+	WHERE MONTH ( checkin_time ) = ?
+	GROUP BY
+	user_id 
+	) AS r
+	LEFT JOIN users on r.user_id = users.id
+	LEFT JOIN departments d on 	users.department_id = d.id`, month).Scan(&q).Error
+
+	if err != nil {
+		err = modelErrors.NewAppError(err, modelErrors.ValidationError)
+		return
+	}
 	return
 }

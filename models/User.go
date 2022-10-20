@@ -233,9 +233,8 @@ func ChangePassword(user User, oldPassword string, newPassword string) (err erro
 	return
 }
 
-func ResetPassword(token Token, newPassword string) (err error) {
-	var user User
-	err = db.DB.Model(&user).Where("email = ?", token.Email).Update("password", newPassword).Error
+func ResetPassword(email string, newPassword string) (err error) {
+	err = db.DB.Table("users").Where("email = ?", email).Update("password", newPassword).Error
 	return
 }
 

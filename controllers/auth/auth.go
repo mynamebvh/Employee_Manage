@@ -169,7 +169,7 @@ func ResetPassword(c *gin.Context) {
 		return
 	}
 
-	err = models.ResetPassword(token, request.NewPassword)
+	err = models.ResetPassword(token.Email, request.NewPassword)
 	if err != nil {
 		appError := errorModels.NewAppError(err, errorModels.ValidationError)
 		_ = c.Error(appError)
