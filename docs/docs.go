@@ -204,6 +204,11 @@ const docTemplate = `{
         },
         "/calendars/checkout": {
             "post": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "Checkout",
                 "consumes": [
                     "application/json"
@@ -237,8 +242,53 @@ const docTemplate = `{
                 }
             }
         },
+        "/calendars/working-time": {
+            "post": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
+                "description": "Get working time in month",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "calendar"
+                ],
+                "summary": "Get working time in month",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/calendar.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/calendar.MessageResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/calendar.MessageResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/departments": {
             "post": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "Create new department on the system",
                 "consumes": [
                     "application/json"
@@ -283,8 +333,90 @@ const docTemplate = `{
                 }
             }
         },
+        "/departments/export-excel": {
+            "post": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
+                "description": "Export users department current",
+                "tags": [
+                    "department"
+                ],
+                "summary": "Export users department current",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/department.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/department.MessageResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/department.MessageResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/departments/export-excel/{department_id}": {
+            "post": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
+                "description": "Export users by department id",
+                "tags": [
+                    "department"
+                ],
+                "summary": "Export users by department id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id of department",
+                        "name": "department_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/department.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/department.MessageResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/department.MessageResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/departments/{department_id}": {
             "get": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "Get department by ID on the system",
                 "tags": [
                     "department"
@@ -321,6 +453,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "Update department by ID on the system",
                 "tags": [
                     "department"
@@ -366,6 +503,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "Delete department by ID on the system",
                 "tags": [
                     "department"
@@ -404,6 +546,11 @@ const docTemplate = `{
         },
         "/requests": {
             "get": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "Get list request",
                 "tags": [
                     "request"
@@ -431,6 +578,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "Create new request",
                 "consumes": [
                     "application/json"
@@ -477,6 +629,11 @@ const docTemplate = `{
         },
         "/requests/{request_id}": {
             "get": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "Get request by id",
                 "tags": [
                     "request"
@@ -513,6 +670,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "Update request by ID on the system",
                 "tags": [
                     "request"
@@ -560,6 +722,11 @@ const docTemplate = `{
         },
         "/users": {
             "post": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "Create new user on the system",
                 "consumes": [
                     "application/json"
@@ -606,6 +773,11 @@ const docTemplate = `{
         },
         "/users/change-password": {
             "put": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "Change password on the system",
                 "tags": [
                     "user"
@@ -646,6 +818,11 @@ const docTemplate = `{
         },
         "/users/me": {
             "get": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "Get info user current on the system",
                 "tags": [
                     "user"
@@ -675,6 +852,11 @@ const docTemplate = `{
         },
         "/users/{user_id}": {
             "get": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "Get user by ID on the system",
                 "tags": [
                     "user"
@@ -711,6 +893,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "Update user by ID on the system",
                 "tags": [
                     "user"
@@ -756,6 +943,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "Delete user by ID on the system",
                 "tags": [
                     "user"
@@ -969,6 +1161,9 @@ const docTemplate = `{
                 "content": {
                     "type": "string"
                 },
+                "create_at": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -1029,6 +1224,10 @@ const docTemplate = `{
         },
         "request.NewRequest": {
             "type": "object",
+            "required": [
+                "content",
+                "type"
+            ],
             "properties": {
                 "content": {
                     "type": "string"

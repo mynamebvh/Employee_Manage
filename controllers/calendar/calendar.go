@@ -82,6 +82,17 @@ func Checkout(c *gin.Context) {
 
 }
 
+// GetWorkingTimeInMonth godoc
+// @Tags calendar
+// @Summary Get working time in month
+// @Description Get working time in month
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} MessageResponse
+// @Failure 400 {object} MessageResponse
+// @Failure 500 {object} MessageResponse
+// @Security Authentication
+// @Router /calendars/working-time [POST]
 func GetWorkingTimeInMonth(c *gin.Context) {
 	t := time.Now()
 

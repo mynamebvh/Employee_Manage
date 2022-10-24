@@ -184,6 +184,15 @@ func DeleteDepartmentByID(c *gin.Context) {
 	})
 }
 
+// ExportExcel godoc
+// @Tags department
+// @Summary Export users department current
+// @Description Export users department current
+// @Success 200 {object} MessageResponse
+// @Failure 400 {object} MessageResponse
+// @Failure 500 {object} MessageResponse
+// @Security Authentication
+// @Router /departments/export-excel [POST]
 func ExportExcel(c *gin.Context) {
 	departmentID := c.GetStringMap("role")["department_id"].(int)
 	users, _ := models.GetUsersByDepartmentID(departmentID)
@@ -199,6 +208,16 @@ func ExportExcel(c *gin.Context) {
 	})
 }
 
+// ExportExcelByDepartmentID godoc
+// @Tags department
+// @Summary Export users by department id
+// @Description Export users by department id
+// @Param department_id path int true "id of department"
+// @Success 200 {object} MessageResponse
+// @Failure 400 {object} MessageResponse
+// @Failure 500 {object} MessageResponse
+// @Security Authentication
+// @Router /departments/export-excel/{department_id} [POST]
 func ExportExcelByDepartmentID(c *gin.Context) {
 	departmentID, err := strconv.Atoi(c.Param("id"))
 

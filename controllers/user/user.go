@@ -67,7 +67,10 @@ func GetUserByID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, MessageResponse{
+		Success: true,
+		Data:    user,
+	})
 }
 
 // CreateUser godoc
@@ -121,7 +124,10 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusCreated, MessageResponse{
+		Success: true,
+		Data:    user,
+	})
 }
 
 // UpdateUserByID godoc
@@ -171,7 +177,11 @@ func UpdateUserByID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, MessageResponse{
+		Success: true,
+		Message: "Update success",
+		Data:    user,
+	})
 
 }
 

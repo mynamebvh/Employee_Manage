@@ -20,7 +20,7 @@ func validateStructUser(user NewUser) (errValidate []errorModels.ErrorValidate) 
 		for _, err := range err.(validator.ValidationErrors) {
 			errValidate = append(errValidate, errorModels.ErrorValidate{
 				Field:   err.StructField(),
-				Message: fmt.Sprintf("%s a is %s", strings.ToLower(err.StructField()), err.Tag()),
+				Message: fmt.Sprintf("%s a is not %s", strings.ToLower(err.StructField()), err.Tag()),
 			})
 		}
 	}

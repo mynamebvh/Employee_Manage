@@ -17,7 +17,7 @@ import (
 type User struct {
 	ID           int       `json:"id" gorm:"primaryKey"`
 	EmployeeCode string    `json:"employee_code" gorm:"not null"`
-	FullName     string    `json:"full_name" gorm:"not null"`
+	FullName     string    `json:"full_name" gorm:"not null;colum:full_name"`
 	Phone        string    `json:"phone" gorm:"not null;unique"`
 	Email        string    `json:"email" gorm:"not null;unique"`
 	Gender       bool      `json:"gender" gorm:"not null"`

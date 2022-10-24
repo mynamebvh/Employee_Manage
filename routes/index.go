@@ -27,7 +27,7 @@ import (
 
 // @host localhost:8080
 // @BasePath /api/v1
-func ApplicationV1Router(router *gin.Engine) {
+func ApplicationV1Router(router *gin.Engine) *gin.Engine {
 
 	router.GET("/v1/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	v1 := router.Group("/api/v1")
@@ -50,4 +50,6 @@ func ApplicationV1Router(router *gin.Engine) {
 		v1Request := v1.Group("/requests", middlewares.Protect())
 		requestRoute(v1Request)
 	}
+
+	return router
 }

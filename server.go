@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"employee_manage/config"
-	middlewares "employee_manage/middlewares"
+	"employee_manage/middlewares"
 	"employee_manage/routes"
 	"employee_manage/services"
 
@@ -16,7 +16,7 @@ import (
 
 func main() {
 	router := gin.Default()
-	services.InitialGinConfig(router)
+	services.InitialGinConfig()
 	router.Use(middlewares.HandlerError)
 	routes.ApplicationV1Router(router)
 	startServer(router)

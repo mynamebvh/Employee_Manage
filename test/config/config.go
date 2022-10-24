@@ -1,14 +1,31 @@
-package services
+package config
 
 import (
 	"employee_manage/config"
 	"fmt"
+
+	"github.com/spf13/viper"
 )
+
+func LoadEnvTest() (err error) {
+	viper.SetConfigFile("../config.json")
+	err = viper.ReadInConfig()
+
+	if err != nil {
+		return
+	}
+
+	config.ConfigApp.ServerPort = viper.GetString("ServerPort")
+
+	err = viper.Unmarshal(&config.ConfigApp)
+
+	return
+}
 
 func InitialGinConfig() {
 	var err error
 
-	err = config.LoadEnv()
+	err = LoadEnvTest()
 
 	if err != nil {
 		panic(fmt.Errorf("fatal error in load env: %s", err))

@@ -10,3 +10,5 @@ consumer:
 	go run ./services/consumer/consumer.go
 docker-dev:
 	sudo docker-compose -f docker-compose.dev.yml up -d
+testing:
+	go test -v ./test

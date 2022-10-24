@@ -102,6 +102,16 @@ func CreateRequest(c *gin.Context) {
 		return
 	}
 
+	errValidate := validateStructRequest(newRequest)
+
+	if errValidate != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"error":   errValidate,
+		})
+		return
+	}
+
 	userID := utils.GetUserIDByContext(c)
 
 	request := models.Request{

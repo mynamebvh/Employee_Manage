@@ -118,6 +118,8 @@ definitions:
         type: integer
       content:
         type: string
+      create_at:
+        type: string
       id:
         type: integer
       status:
@@ -162,6 +164,9 @@ definitions:
         type: string
       type:
         type: string
+    required:
+    - content
+    - type
     type: object
   request.PaginationResponse:
     properties:
@@ -384,7 +389,34 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/calendar.MessageResponse'
+      security:
+      - Authentication: []
       summary: Checkout
+      tags:
+      - calendar
+  /calendars/working-time:
+    post:
+      consumes:
+      - application/json
+      description: Get working time in month
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/calendar.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/calendar.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/calendar.MessageResponse'
+      security:
+      - Authentication: []
+      summary: Get working time in month
       tags:
       - calendar
   /departments:
@@ -414,6 +446,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/department.MessageResponse'
+      security:
+      - Authentication: []
       summary: Create new department
       tags:
       - department
@@ -439,6 +473,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/department.MessageResponse'
+      security:
+      - Authentication: []
       summary: Delete department by ID
       tags:
       - department
@@ -463,6 +499,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/department.MessageResponse'
+      security:
+      - Authentication: []
       summary: Get department by ID
       tags:
       - department
@@ -493,7 +531,57 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/department.MessageResponse'
+      security:
+      - Authentication: []
       summary: Update department by ID
+      tags:
+      - department
+  /departments/export-excel:
+    post:
+      description: Export users department current
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/department.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/department.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/department.MessageResponse'
+      security:
+      - Authentication: []
+      summary: Export users department current
+      tags:
+      - department
+  /departments/export-excel/{department_id}:
+    post:
+      description: Export users by department id
+      parameters:
+      - description: id of department
+        in: path
+        name: department_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/department.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/department.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/department.MessageResponse'
+      security:
+      - Authentication: []
+      summary: Export users by department id
       tags:
       - department
   /requests:
@@ -512,6 +600,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/request.MessageResponse'
+      security:
+      - Authentication: []
       summary: Get list request
       tags:
       - request
@@ -541,6 +631,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/request.MessageResponse'
+      security:
+      - Authentication: []
       summary: Create new request
       tags:
       - request
@@ -566,6 +658,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/request.MessageResponse'
+      security:
+      - Authentication: []
       summary: Get request by id
       tags:
       - request
@@ -596,6 +690,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/request.MessageResponse'
+      security:
+      - Authentication: []
       summary: Update request by ID
       tags:
       - request
@@ -626,6 +722,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/user.MessageResponse'
+      security:
+      - Authentication: []
       summary: Create New User
       tags:
       - user
@@ -651,6 +749,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/user.MessageResponse'
+      security:
+      - Authentication: []
       summary: Delete user by ID
       tags:
       - user
@@ -675,6 +775,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/user.MessageResponse'
+      security:
+      - Authentication: []
       summary: Get user by ID
       tags:
       - user
@@ -705,6 +807,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/user.MessageResponse'
+      security:
+      - Authentication: []
       summary: Update user by ID
       tags:
       - user
@@ -731,6 +835,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/user.MessageResponse'
+      security:
+      - Authentication: []
       summary: Change password
       tags:
       - user
@@ -750,6 +856,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/user.MessageResponse'
+      security:
+      - Authentication: []
       summary: Get info user current
       tags:
       - user
