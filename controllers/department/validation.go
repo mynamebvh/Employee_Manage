@@ -32,7 +32,7 @@ func updateValidation(request map[string]interface{}) (errValidate []errorModels
 		"name":            "required,gt=3,lt=100",
 		"department_code": "required,gt=1,lt=100",
 		"address":         "required,gt=3,lt=100",
-		"status":          "required,boolean",
+		"status":          "boolean",
 	}
 
 	validate := validator.New()
@@ -48,7 +48,7 @@ func updateValidation(request map[string]interface{}) (errValidate []errorModels
 				validatorErr := errVar.(validator.ValidationErrors)
 				errValidate = append(errValidate, errorModels.ErrorValidate{
 					Field:   k,
-					Message: fmt.Sprintf("%s a is %s", k, validatorErr[0].Tag()),
+					Message: fmt.Sprintf("%s is %s", k, validatorErr[0].Tag()),
 				})
 			}
 		}

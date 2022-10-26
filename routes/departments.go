@@ -8,6 +8,7 @@ import (
 )
 
 func departmentRoute(route *gin.RouterGroup) {
+	route.GET("/", middlewares.ProtectRole([]string{"admin"}, ""), controllers.GetDepartments)
 	route.GET("/:id", middlewares.ProtectRole([]string{"admin"}, "requests"), controllers.GetDepartmentByID)
 	route.POST("/", middlewares.ProtectRole([]string{"admin"}, ""), controllers.CreateDepartment)
 	route.POST("/export-excel", middlewares.ProtectRole([]string{"manager"}, ""), controllers.ExportExcel)

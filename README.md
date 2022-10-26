@@ -56,6 +56,11 @@ make doc
 make docker-dev
 ```
 
+6. Run test
+```bash 
+make testing
+```
+
 ## Docs API
 
 ```bash 

@@ -106,3 +106,44 @@ func TestRootDeleteUserByID(t *testing.T) {
 	assert.NotEmpty(t, response)
 	assert.True(t, response.Success)
 }
+
+func TestUserSendMailForgetPassword(t *testing.T) {
+	w := httptest.NewRecorder()
+
+	data := map[string]interface{}{
+		"email": "mynamebvh2@gmail.com",
+	}
+
+	body, _ := json.Marshal(data)
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/send-code", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	router.ServeHTTP(w, req)
+
+	var response user.MessageResponse
+	json.Unmarshal(w.Body.Bytes(), &response)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.NotEmpty(t, response)
+	assert.True(t, response.Success)
+}
+
+func TestUserForgetPassword(t *testing.T) {
+	w := httptest.NewRecorder()
+
+	data := map[string]interface{}{
+		"code":         "7z7Z#EqO4'-C2ofOmdW3",
+		"new_password": "hoangdz",
+	}
+
+	body, _ := json.Marshal(data)
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/reset-password", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	router.ServeHTTP(w, req)
+
+	var response user.MessageResponse
+	json.Unmarshal(w.Body.Bytes(), &response)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.NotEmpty(t, response)
+	assert.True(t, response.Success)
+}

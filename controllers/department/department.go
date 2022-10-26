@@ -11,6 +11,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func GetDepartments(c *gin.Context) {
+	data, err := models.GetDepartments(c)
+
+	if err != nil {
+		appError := errorModels.NewAppError(err, errorModels.ValidationError)
+		c.Error(appError)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success":      true,
+		"page_current": data.Current,
+		"page_size":    data.PageSize,
+		"total":        data.Total,
+		"data":         data.Data,
+	})
+}
+
 // GetDepartmentByID godoc
 // @Tags department
 // @Summary Get department by ID
@@ -92,7 +110,7 @@ func CreateDepartment(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, MessageResponse{
+	c.JSON(http.StatusCreated, MessageResponse{
 		Success: true,
 		Message: "Success",
 		Data:    department,

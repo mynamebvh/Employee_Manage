@@ -10,6 +10,7 @@ import (
 
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -83,17 +84,41 @@ func CreateUser(user *User) (err error) {
 	return
 }
 
-func (u *User) GetAllUser(limit int, offset int) (users *[]User, err error) {
-	err = db.DB.Limit(limit).Offset(offset).Find(users).Error
+func GetUsers(c *gin.Context) (data dto.QueryPagination, err error) {
+	var user []dto.QueryUserJoin
+	var page, limit int
+	err = db.DB.Model(&User{}).Scopes(utils.Paginate(c, &page, &limit)).
+		Select(`
+		users.id, 
+		users.full_name, 
+		users.employee_code, 
+		users.phone, 
+		users.email,
+		users.gender,
+		users.birthday,
+		users.address,
+		d.name department_name`).
+		Joins("left join departments d on users.department_id = d.id").
+		Scan(&user).Error
 
 	if err != nil {
 		return
 	}
 
+	var count int64
+	db.DB.Model(&User{}).Count(&count)
+
+	data = dto.QueryPagination{
+		Current:  page,
+		Total:    count,
+		PageSize: limit,
+		Data:     user,
+	}
+
 	return
 }
 
-func GetMe(user *User, id int) (queryResult dto.QueryResultGetMe, err error) {
+func GetMe(user *User, id int) (queryResult dto.QueryUserJoin, err error) {
 	db.DB.Model(user).
 		Select(
 			"users.id",

@@ -22,13 +22,8 @@ import (
 // @Router /requests [GET]
 func GetRequests(c *gin.Context) {
 	role := c.GetStringMap("role")
-	li := c.DefaultQuery("limit", "10")
-	p := c.DefaultQuery("page", "0")
-	var count int64
-	limit, _ := strconv.Atoi(li)
-	page, _ := strconv.Atoi(p)
 
-	requests, err := models.GetRequests(role, &count, limit, page)
+	result, err := models.GetRequests(c, role)
 
 	if err != nil {
 		appError := errorModels.NewAppError(err, errorModels.ValidationError)
@@ -39,10 +34,10 @@ func GetRequests(c *gin.Context) {
 	c.JSON(http.StatusOK, PaginationResponse{
 		Success:  true,
 		Message:  "Success",
-		Data:     requests,
-		Current:  page,
-		PageSize: limit,
-		Total:    int(count),
+		Data:     result.Data,
+		Current:  result.Current,
+		PageSize: result.PageSize,
+		Total:    int(result.Total),
 	})
 }
 
@@ -128,7 +123,7 @@ func CreateRequest(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, MessageResponse{
+	c.JSON(http.StatusCreated, MessageResponse{
 		Success: true,
 		Message: "Success",
 		Data:    request,

@@ -15,6 +15,25 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func GetUsers(c *gin.Context) {
+	data, err := models.GetUsers(c)
+
+	if err != nil {
+		appError := errorModels.NewAppError(err, errorModels.ValidationError)
+		c.Error(appError)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success":      true,
+		"page_current": data.Current,
+		"page_size":    data.PageSize,
+		"total":        data.Total,
+		"data":         data.Data,
+	})
+
+}
+
 // GetMe godoc
 // @Tags user
 // @Summary Get info user current

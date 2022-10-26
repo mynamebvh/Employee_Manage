@@ -9,6 +9,7 @@ import (
 
 func userRoute(route *gin.RouterGroup) {
 	route.GET("/me", controllers.GetMe)
+	route.GET("/", middlewares.ProtectRole([]string{"admin"}, ""), controllers.GetUsers)
 	route.GET("/:id", middlewares.ProtectRole([]string{"admin", "manager"}, "users"), controllers.GetUserByID)
 	route.POST("/reset-password", controllers.ResetPassWordQueue)
 	route.POST("/", middlewares.ProtectRole([]string{"admin"}, ""), controllers.CreateUser)

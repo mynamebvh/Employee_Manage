@@ -4,9 +4,11 @@ import (
 	db "employee_manage/config"
 	modelErrors "employee_manage/constant"
 	"employee_manage/models/dto"
+	"employee_manage/utils"
 	"encoding/json"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
@@ -46,9 +48,10 @@ func CreateRequest(re *Request) (err error) {
 	return
 }
 
-func GetRequests(role map[string]interface{}, count *int64, limit int, page int) (request []dto.QueryGetRequest, err error) {
-
-	offset := page * limit
+func GetRequests(c *gin.Context, role map[string]interface{}) (data dto.QueryPagination, err error) {
+	var page, limit int
+	var count int64
+	var result []dto.QueryGetRequest
 
 	if role["name"] == "admin" {
 		if err = db.DB.
@@ -56,14 +59,20 @@ func GetRequests(role map[string]interface{}, count *int64, limit int, page int)
 			Select("rq.type", "rq.content", "rq.status", "u.full_name as full_name", "u1.full_name as approved_by").
 			Joins("left join users as u on rq.user_id = u.id").
 			Joins("left join users as u1 on rq.approved_by = u1.id").
-			Limit(limit).
-			Offset(offset).
-			Scan(&request).Error; err != nil {
+			Scopes(utils.Paginate(c, &page, &limit)).
+			Scan(&result).Error; err != nil {
 			return
 		}
 
-		if err = db.DB.Table("requests").Count(count).Error; err != nil {
+		if err = db.DB.Table("requests").Count(&count).Error; err != nil {
 			return
+		}
+
+		data = dto.QueryPagination{
+			Current:  page,
+			Total:    count,
+			PageSize: limit,
+			Data:     result,
 		}
 	} else {
 		departmentID := role["department_id"].(int)
@@ -73,12 +82,18 @@ func GetRequests(role map[string]interface{}, count *int64, limit int, page int)
 			Select("rq.type", "rq.content", "rq.status", "u.full_name as full_name", "u1.full_name as approved_by").
 			Joins("left join users as u on rq.user_id = u.id").
 			Joins("left join users as u1 on rq.approved_by = u1.id").
-			Limit(limit).
-			Offset(offset).
-			Scan(&request)
+			Scopes(utils.Paginate(c, &page, &limit)).
+			Scan(&result)
 
-		if err = db.DB.Table("requests").Where("user_id in (?)", subQuery).Count(count).Error; err != nil {
+		if err = db.DB.Table("requests").Where("user_id in (?)", subQuery).Count(&count).Error; err != nil {
 			return
+		}
+
+		data = dto.QueryPagination{
+			Current:  page,
+			Total:    count,
+			PageSize: limit,
+			Data:     result,
 		}
 	}
 	return

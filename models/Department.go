@@ -4,9 +4,11 @@ import (
 	db "employee_manage/config"
 	modelErrors "employee_manage/constant"
 	"employee_manage/models/dto"
+	"employee_manage/utils"
 	"encoding/json"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
@@ -19,6 +21,28 @@ type Department struct {
 	User           User      `json:"-"`
 	CreatedAt      time.Time `json:"-" gorm:"autoCreateTime:mili"`
 	UpdatedAt      time.Time `json:"-" gorm:"autoUpdateTime:mili"`
+}
+
+func GetDepartments(c *gin.Context) (data dto.QueryPagination, err error) {
+	var department []Department
+	var page, limit int
+
+	err = db.DB.Scopes(utils.Paginate(c, &page, &limit)).Find(&department).Error
+	if err != nil {
+		return
+	}
+
+	var count int64
+	db.DB.Model(&Department{}).Count(&count)
+
+	data = dto.QueryPagination{
+		Current:  page,
+		Total:    count,
+		PageSize: limit,
+		Data:     department,
+	}
+	return
+
 }
 
 func GetUsersByDepartmentID(id int) (users []dto.QueryGetUsersByDepartmentID, err error) {
