@@ -14,6 +14,21 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestRootGetUsers(t *testing.T) {
+	w := httptest.NewRecorder()
+
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/users", nil)
+	req.Header.Set("Authorization", "Bearer "+JWTAccountRoot.AccessToken)
+	router.ServeHTTP(w, req)
+
+	var response user.MessageResponse
+	json.Unmarshal(w.Body.Bytes(), &response)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.NotEmpty(t, response)
+	assert.True(t, response.Success)
+}
+
 func TestRootGetUserByID(t *testing.T) {
 	w := httptest.NewRecorder()
 
@@ -62,6 +77,64 @@ func TestRootCreateUser(t *testing.T) {
 	assert.Equal(t, http.StatusCreated, w.Code)
 	assert.NotEmpty(t, response)
 	assert.True(t, response.Success)
+}
+
+func TestValidateCreateUser(t *testing.T) {
+	w := httptest.NewRecorder()
+	birthday, _ := time.Parse("2006-01-02 15:04:05.000 -0700", "2020-01-02 03:04:05.000 +0000")
+
+	newUser := user.NewUser{
+		Password:     "hoangdz",
+		Email:        "mynamebvh19@gmail.com",
+		Gender:       true,
+		Address:      "Hà Nội",
+		DepartmentID: 1,
+		RoleID:       3,
+		Birthday:     birthday,
+	}
+	body, _ := json.Marshal(newUser)
+
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/users/", bytes.NewBuffer(body))
+	req.Header.Set("Authorization", "Bearer "+JWTAccountRoot.AccessToken)
+	req.Header.Set("Content-Type", "application/json")
+	router.ServeHTTP(w, req)
+
+	var response map[string]interface{}
+	json.Unmarshal(w.Body.Bytes(), &response)
+	success := response["success"].(bool)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.NotEmpty(t, response)
+	assert.False(t, success)
+}
+
+func TestProtectRoleCreateUser(t *testing.T) {
+	w := httptest.NewRecorder()
+	birthday, _ := time.Parse("2006-01-02 15:04:05.000 -0700", "2020-01-02 03:04:05.000 +0000")
+
+	newUser := user.NewUser{
+		Password:     "hoangdz",
+		Email:        "mynamebvh19@gmail.com",
+		Gender:       true,
+		Address:      "Hà Nội",
+		DepartmentID: 1,
+		RoleID:       3,
+		Birthday:     birthday,
+	}
+	body, _ := json.Marshal(newUser)
+
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/users/", bytes.NewBuffer(body))
+	req.Header.Set("Authorization", "Bearer "+JWTAccountManager.AccessToken)
+	req.Header.Set("Content-Type", "application/json")
+	router.ServeHTTP(w, req)
+
+	var response map[string]interface{}
+	json.Unmarshal(w.Body.Bytes(), &response)
+	success := response["success"].(bool)
+
+	assert.Equal(t, http.StatusForbidden, w.Code)
+	assert.NotEmpty(t, response)
+	assert.False(t, success)
 }
 
 func TestRootUpdateUserByID(t *testing.T) {
