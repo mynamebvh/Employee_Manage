@@ -17,7 +17,7 @@ var JWTAccountUser auth.LoginResponse
 func GetAccountRoot() auth.RequestLogin {
 	return auth.RequestLogin{
 		Email:    "mynamebvh@gmail.com",
-		Password: "hoangdz1",
+		Password: "hoangdz",
 	}
 }
 

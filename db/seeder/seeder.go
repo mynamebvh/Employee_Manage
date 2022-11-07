@@ -17,6 +17,7 @@ func main() {
 		{ID: 1, FullName: "Root", Phone: "0979150931", Email: "mynamebvh@gmail.com", Gender: true, Address: "HN", Password: "hoangdz", RoleID: 1, DepartmentID: 1, Birthday: birthday},
 		{ID: 2, FullName: "Manager D1", Phone: "0979150932", Email: "mynamebvh1@gmail.com", Gender: true, Address: "HN", Password: "hoangdz", RoleID: 2, DepartmentID: 1, Birthday: birthday},
 		{ID: 3, FullName: "Bui Viet Hoang", Phone: "0979150933", Email: "mynamebvh2@gmail.com", Gender: true, Address: "HN", Password: "hoangdz", RoleID: 3, DepartmentID: 1, Birthday: birthday},
+		{ID: 4, FullName: "Bui Viet Huy", Phone: "0979150998", Email: "mynamebvh3@gmail.com", Gender: true, Address: "HN", Password: "hoangdz", RoleID: 3, DepartmentID: 1, Birthday: birthday},
 	}
 
 	roles := []models.Role{

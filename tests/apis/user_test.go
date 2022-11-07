@@ -1,9 +1,9 @@
-package test
+package apis
 
 import (
 	"bytes"
 	"employee_manage/controllers/user"
-	. "employee_manage/test/config"
+	. "employee_manage/tests/config"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -152,7 +152,7 @@ func TestRootUpdateUserByID(t *testing.T) {
 
 	body, _ := json.Marshal(userUpdate)
 
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/users/3", bytes.NewBuffer(body))
+	req, _ := http.NewRequest(http.MethodPut, "/api/v1/users/4", bytes.NewBuffer(body))
 	req.Header.Set("Authorization", "Bearer "+JWTAccountRoot.AccessToken)
 	req.Header.Set("Content-Type", "application/json")
 	router.ServeHTTP(w, req)

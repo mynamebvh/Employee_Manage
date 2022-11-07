@@ -1,4 +1,4 @@
-package test
+package apis
 
 import (
 	"bytes"
@@ -12,6 +12,7 @@ import (
 )
 
 func TestLoginRoute(t *testing.T) {
+
 	w := httptest.NewRecorder()
 
 	login := auth.RequestLogin{

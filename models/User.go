@@ -181,7 +181,6 @@ func GetUserByID(id int) (user User, err error) {
 
 func GetUserByEmail(email string) (user User, err error) {
 	err = db.DB.Where("email=?", email).First(&user).Error
-
 	if err != nil {
 		switch err.Error() {
 		case gorm.ErrRecordNotFound.Error():

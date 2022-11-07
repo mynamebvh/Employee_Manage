@@ -1,8 +1,8 @@
-package test
+package apis
 
 import (
 	"employee_manage/controllers/user"
-	. "employee_manage/test/config"
+	. "employee_manage/tests/config"
 	"encoding/json"
 	"fmt"
 	"net/http"

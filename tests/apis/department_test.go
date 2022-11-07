@@ -1,10 +1,10 @@
-package test
+package apis
 
 import (
 	"bytes"
 	"employee_manage/controllers/department"
 	"employee_manage/controllers/user"
-	. "employee_manage/test/config"
+	. "employee_manage/tests/config"
 	"encoding/json"
 	"fmt"
 	"net/http"
