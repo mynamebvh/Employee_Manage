@@ -1,6 +1,6 @@
 # Project Employee Manager
 
-Project study golang - Zinza Company
+Project study golang
 
 ## Manual Installation
 
