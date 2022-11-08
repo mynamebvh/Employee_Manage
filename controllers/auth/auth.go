@@ -122,13 +122,15 @@ func SendCodeResetPassword(c *gin.Context) {
 	}
 
 	user, err := models.GetUserByEmail(request.Email)
+	fmt.Println("ERRRRR", user, err)
+
 	if err != nil {
 		appError := errorModels.NewAppError(err, errorModels.ValidationError)
 		c.Error(appError)
 		return
 	}
 
-	code, err := models.GenerateResetPassword(user, request.Email)
+	code, err := models.GenerateResetPassword(request.Email)
 	if err != nil {
 		appError := errorModels.NewAppError(err, errorModels.ValidationError)
 		c.Error(appError)

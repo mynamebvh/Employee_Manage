@@ -7,6 +7,7 @@ import (
 	"employee_manage/utils"
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"time"
 
@@ -181,6 +182,7 @@ func GetUserByID(id int) (user User, err error) {
 
 func GetUserByEmail(email string) (user User, err error) {
 	err = db.DB.Where("email=?", email).First(&user).Error
+	fmt.Println("Model ", err)
 	if err != nil {
 		switch err.Error() {
 		case gorm.ErrRecordNotFound.Error():
@@ -262,7 +264,7 @@ func ResetPassword(email string, newPassword string) (err error) {
 	return
 }
 
-func GenerateResetPassword(user User, email string) (code string, err error) {
+func GenerateResetPassword(email string) (code string, err error) {
 
 	code = utils.RandomStringSecret(20)
 

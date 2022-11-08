@@ -36,7 +36,7 @@ func InitialTestConfig() sqlmock.Sqlmock {
 		panic(fmt.Errorf("fatal error in load env: %s", err))
 	}
 
-	db, mock, err := sqlmock.New()
+	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 
 	if err != nil {
 		fmt.Printf("an error '%s' was not expected when opening a stub database connection", err)
