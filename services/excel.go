@@ -96,7 +96,6 @@ func ReadExcelResetPassword(path string) (data []DataQueue, err error) {
 			FullName: rows[i][1],
 			Email:    rows[i][2],
 		})
-		fmt.Println()
 	}
 
 	return

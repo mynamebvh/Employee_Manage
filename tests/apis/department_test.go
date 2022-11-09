@@ -6,7 +6,6 @@ import (
 	"employee_manage/controllers/user"
 	. "employee_manage/tests/config"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -144,7 +143,6 @@ func TestUpdateDepartmentByID(t *testing.T) {
 	var response user.MessageResponse
 	json.Unmarshal(w.Body.Bytes(), &response)
 
-	fmt.Println("Loi", response)
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.NotEmpty(t, response)
 	assert.True(t, response.Success)
