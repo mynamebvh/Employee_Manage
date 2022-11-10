@@ -15,15 +15,9 @@ var (
 	router *gin.Engine
 )
 
-type API struct {
-	URL    string
-	Method string
-}
-
 type TestModel struct {
 	Name  string
 	Type  string
-	API   API
 	Args  interface{}
 	Mock  func()
 	Want  interface{}

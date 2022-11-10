@@ -12,5 +12,5 @@ docker-dev:
 	sudo docker-compose -f docker-compose.dev.yml up -d
 testing:
 	go test ./tests/apis
-user:
-	go test ./tests/apis/init_test.go ./tests/apis/mock_test.go
+mock:
+	go test ./tests/apis/init_test.go ./tests/apis/department_test.go

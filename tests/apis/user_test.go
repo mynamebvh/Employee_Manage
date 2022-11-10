@@ -1,204 +1,211 @@
 package apis
 
-// import (
-// 	"bytes"
-// 	"employee_manage/controllers/user"
-// 	. "employee_manage/tests/config"
-// 	"encoding/json"
-// 	"net/http"
-// 	"net/http/httptest"
-// 	"testing"
-// 	"time"
+import (
+	"bytes"
+	"employee_manage/controllers/auth"
+	"employee_manage/controllers/user"
+	"time"
 
-// 	"github.com/stretchr/testify/assert"
-// )
+	. "employee_manage/tests/config"
+	"employee_manage/tests/mocks"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"testing"
 
-// func TestRootGetUserByID(t *testing.T) {
-// 	w := httptest.NewRecorder()
+	"github.com/stretchr/testify/assert"
+)
 
-// 	req, _ := http.NewRequest(http.MethodGet, "/api/v1/users/3", nil)
-// 	req.Header.Set("Authorization", "Bearer "+JWTAccountRoot.AccessToken)
-// 	router.ServeHTTP(w, req)
+func TestRootGetUserByID(t *testing.T) {
+	mocks.MockGetUserByID()
+	w := httptest.NewRecorder()
 
-// 	var response user.MessageResponse
-// 	json.Unmarshal(w.Body.Bytes(), &response)
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/users/3", nil)
+	req.Header.Set("Authorization", "Bearer "+JWTAccountRoot.AccessToken)
+	router.ServeHTTP(w, req)
 
-// 	assert.Equal(t, http.StatusOK, w.Code)
-// 	assert.NotEmpty(t, response)
-// 	assert.True(t, response.Success)
-// }
+	var response user.MessageResponse
+	json.Unmarshal(w.Body.Bytes(), &response)
 
-// // func TestRootCreateUser(t *testing.T) {
-// // 	w := httptest.NewRecorder()
-// // 	birthday, _ := time.Parse("2006-01-02 15:04:05.000 -0700", "2020-01-02 03:04:05.000 +0000")
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.NotEmpty(t, response)
+	assert.True(t, response.Success)
+}
 
-// // 	newUser := user.NewUser{
-// // 		FullName:     "Bui Viet Hoang",
-// // 		Password:     "hoangdz",
-// // 		Phone:        "0966150922",
-// // 		Email:        "mynamebvh19@gmail.com",
-// // 		Gender:       true,
-// // 		Address:      "Hà Nội",
-// // 		DepartmentID: 1,
-// // 		RoleID:       3,
-// // 		Birthday:     birthday,
-// // 	}
-// // 	body, _ := json.Marshal(newUser)
+func TestRootGetUsers(t *testing.T) {
+	tests := []TestModel{
+		{
+			Name: "Test Root Get Users",
+			Type: "Success",
+			Args: nil,
+			Mock: mocks.MockGetUsers,
+			Want: http.StatusOK,
+		},
+		{
+			Name: "Test Root Get User By ID",
+			Type: "Success",
+			Args: nil,
+			Mock: mocks.MockGetUserByID,
+			Want: http.StatusOK,
+		},
+		{
+			Name: "Test Protect Role Get Users",
+			Type: "Role",
+			Args: nil,
+			Mock: mocks.MockUser,
+			Want: http.StatusForbidden,
+		},
+	}
 
-// // 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/users/", bytes.NewBuffer(body))
-// // 	req.Header.Set("Authorization", "Bearer "+JWTAccountRoot.AccessToken)
-// // 	req.Header.Set("Content-Type", "application/json")
-// // 	router.ServeHTTP(w, req)
+	for _, tt := range tests {
+		w := httptest.NewRecorder()
+		tt.Mock()
+		body, _ := json.Marshal(tt.Args)
+		req, _ := http.NewRequest(http.MethodGet, "/api/v1/users/", bytes.NewBuffer(body))
+		if tt.Type == "Role" {
+			req.Header.Set("Authorization", "Bearer "+JWTAccountUser.AccessToken)
+		} else {
+			req.Header.Set("Authorization", "Bearer "+JWTAccountRoot.AccessToken)
+		}
+		req.Header.Set("Content-Type", "application/json")
+		router.ServeHTTP(w, req)
 
-// // 	var response user.MessageResponse
-// // 	json.Unmarshal(w.Body.Bytes(), &response)
+		var response auth.MessageResponse
+		json.Unmarshal(w.Body.Bytes(), &response)
 
-// // 	data, _ := response.Data.(map[string]interface{})
-// // 	userID = strconv.Itoa(int(data["id"].(float64)))
+		if tt.Type == "Success" {
+			assert.Equal(t, tt.Want, w.Code)
+			assert.NotEmpty(t, response)
+			assert.True(t, response.Success)
+		} else if tt.Type == "Fail" {
+			assert.Equal(t, tt.Want, w.Code)
+			assert.NotEmpty(t, response)
+			assert.False(t, response.Success)
+		} else {
+			var response map[string]interface{}
+			json.Unmarshal(w.Body.Bytes(), &response)
+			assert.Equal(t, tt.Want, w.Code)
+			assert.NotEmpty(t, response)
+			assert.False(t, response["success"].(bool))
+		}
+	}
+}
 
-// // 	assert.Equal(t, http.StatusCreated, w.Code)
-// // 	assert.NotEmpty(t, response)
-// // 	assert.True(t, response.Success)
-// // }
+func TestRootCreateUser(t *testing.T) {
+	mocks.MockCreateUser()
+	w := httptest.NewRecorder()
+	birthday, _ := time.Parse("2006-01-02 15:04:05.000 -0700", "2020-01-02 03:04:05.000 +0000")
 
-// func TestValidateCreateUser(t *testing.T) {
-// 	w := httptest.NewRecorder()
-// 	birthday, _ := time.Parse("2006-01-02 15:04:05.000 -0700", "2020-01-02 03:04:05.000 +0000")
+	newUser := user.NewUser{
+		FullName:     "Bui Viet Hoang",
+		Password:     "hoangdz",
+		Phone:        "0966150922",
+		Email:        "mynamebvh19@gmail.com",
+		Gender:       true,
+		Address:      "Hà Nội",
+		DepartmentID: 1,
+		RoleID:       3,
+		Birthday:     birthday,
+	}
+	body, _ := json.Marshal(newUser)
 
-// 	newUser := user.NewUser{
-// 		Password:     "hoangdz",
-// 		Email:        "mynamebvh19@gmail.com",
-// 		Gender:       true,
-// 		Address:      "Hà Nội",
-// 		DepartmentID: 1,
-// 		RoleID:       3,
-// 		Birthday:     birthday,
-// 	}
-// 	body, _ := json.Marshal(newUser)
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/users/", bytes.NewBuffer(body))
+	req.Header.Set("Authorization", "Bearer "+JWTAccountRoot.AccessToken)
+	req.Header.Set("Content-Type", "application/json")
+	router.ServeHTTP(w, req)
 
-// 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/users/", bytes.NewBuffer(body))
-// 	req.Header.Set("Authorization", "Bearer "+JWTAccountRoot.AccessToken)
-// 	req.Header.Set("Content-Type", "application/json")
-// 	router.ServeHTTP(w, req)
+	var response user.MessageResponse
+	json.Unmarshal(w.Body.Bytes(), &response)
 
-// 	var response map[string]interface{}
-// 	json.Unmarshal(w.Body.Bytes(), &response)
-// 	success := response["success"].(bool)
+	assert.Equal(t, http.StatusCreated, w.Code)
+	assert.NotEmpty(t, response)
+	assert.True(t, response.Success)
+}
 
-// 	assert.Equal(t, http.StatusBadRequest, w.Code)
-// 	assert.NotEmpty(t, response)
-// 	assert.False(t, success)
-// }
+func TestRootDeleteUserByID(t *testing.T) {
+	mocks.MockDeleteUserByID()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodDelete, "/api/v1/users/4", nil)
+	req.Header.Set("Authorization", "Bearer "+JWTAccountRoot.AccessToken)
+	router.ServeHTTP(w, req)
 
-// func TestProtectRoleCreateUser(t *testing.T) {
-// 	w := httptest.NewRecorder()
-// 	birthday, _ := time.Parse("2006-01-02 15:04:05.000 -0700", "2020-01-02 03:04:05.000 +0000")
+	var response user.MessageResponse
+	json.Unmarshal(w.Body.Bytes(), &response)
 
-// 	newUser := user.NewUser{
-// 		Password:     "hoangdz",
-// 		Email:        "mynamebvh19@gmail.com",
-// 		Gender:       true,
-// 		Address:      "Hà Nội",
-// 		DepartmentID: 1,
-// 		RoleID:       3,
-// 		Birthday:     birthday,
-// 	}
-// 	body, _ := json.Marshal(newUser)
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.NotEmpty(t, response)
+	assert.True(t, response.Success)
+}
 
-// 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/users/", bytes.NewBuffer(body))
-// 	req.Header.Set("Authorization", "Bearer "+JWTAccountManager.AccessToken)
-// 	req.Header.Set("Content-Type", "application/json")
-// 	router.ServeHTTP(w, req)
+func TestRootUpdateUserByID(t *testing.T) {
+	mocks.MockUpdateUserByID()
+	w := httptest.NewRecorder()
+	userUpdate := map[string]interface{}{
+		"full_name":     "test update",
+		"email":         "mynamebvh3000@gmail.com",
+		"phone":         "0979850933",
+		"address":       "Hà Nội",
+		"department_id": 1,
+		"gender":        true,
+		"birthday":      "2020-01-02T15:04:05",
+	}
 
-// 	var response map[string]interface{}
-// 	json.Unmarshal(w.Body.Bytes(), &response)
-// 	success := response["success"].(bool)
+	body, _ := json.Marshal(userUpdate)
 
-// 	assert.Equal(t, http.StatusForbidden, w.Code)
-// 	assert.NotEmpty(t, response)
-// 	assert.False(t, success)
-// }
+	req, _ := http.NewRequest(http.MethodPut, "/api/v1/users/4", bytes.NewBuffer(body))
+	req.Header.Set("Authorization", "Bearer "+JWTAccountRoot.AccessToken)
+	req.Header.Set("Content-Type", "application/json")
+	router.ServeHTTP(w, req)
 
-// // func TestRootUpdateUserByID(t *testing.T) {
-// // 	w := httptest.NewRecorder()
+	var response user.MessageResponse
+	json.Unmarshal(w.Body.Bytes(), &response)
 
-// // 	userUpdate := map[string]interface{}{
-// // 		"full_name":     "test update",
-// // 		"email":         "mynamebvh3000@gmail.com",
-// // 		"phone":         "0979850933",
-// // 		"address":       "Hà Nội",
-// // 		"department_id": 1,
-// // 		"gender":        true,
-// // 		"birthday":      "2020-01-02T15:04:05",
-// // 	}
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.NotEmpty(t, response)
+	assert.True(t, response.Success)
+}
 
-// // 	body, _ := json.Marshal(userUpdate)
+func TestUserSendMailForgetPassword(t *testing.T) {
+	mocks.MockSendCode()
+	w := httptest.NewRecorder()
 
-// // 	req, _ := http.NewRequest(http.MethodPut, "/api/v1/users/4", bytes.NewBuffer(body))
-// // 	req.Header.Set("Authorization", "Bearer "+JWTAccountRoot.AccessToken)
-// // 	req.Header.Set("Content-Type", "application/json")
-// // 	router.ServeHTTP(w, req)
+	data := map[string]interface{}{
+		"email": "mynamebvh5@gmail.com",
+	}
 
-// // 	var response user.MessageResponse
-// // 	json.Unmarshal(w.Body.Bytes(), &response)
+	body, _ := json.Marshal(data)
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/send-code", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	router.ServeHTTP(w, req)
 
-// // 	assert.Equal(t, http.StatusOK, w.Code)
-// // 	assert.NotEmpty(t, response)
-// // 	assert.True(t, response.Success)
-// // }
+	var response user.MessageResponse
+	json.Unmarshal(w.Body.Bytes(), &response)
 
-// // func TestRootDeleteUserByID(t *testing.T) {
-// // 	w := httptest.NewRecorder()
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.NotEmpty(t, response)
+	assert.True(t, response.Success)
+}
 
-// // 	req, _ := http.NewRequest(http.MethodDelete, "/api/v1/users/"+(userID), nil)
-// // 	req.Header.Set("Authorization", "Bearer "+JWTAccountRoot.AccessToken)
-// // 	router.ServeHTTP(w, req)
+func TestUserForgetPassword(t *testing.T) {
+	mocks.MocKForgetPassword()
+	w := httptest.NewRecorder()
 
-// // 	var response user.MessageResponse
-// // 	json.Unmarshal(w.Body.Bytes(), &response)
+	data := map[string]interface{}{
+		"code":         "code",
+		"new_password": "hoangdz",
+	}
 
-// // 	assert.Equal(t, http.StatusOK, w.Code)
-// // 	assert.NotEmpty(t, response)
-// // 	assert.True(t, response.Success)
-// // }
+	body, _ := json.Marshal(data)
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/reset-password", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	router.ServeHTTP(w, req)
 
-// // func TestUserSendMailForgetPassword(t *testing.T) {
-// // 	w := httptest.NewRecorder()
+	var response user.MessageResponse
+	json.Unmarshal(w.Body.Bytes(), &response)
 
-// // 	data := map[string]interface{}{
-// // 		"email": "mynamebvh2@gmail.com",
-// // 	}
+	t.Log(w.Body.String())
 
-// // 	body, _ := json.Marshal(data)
-// // 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/send-code", bytes.NewBuffer(body))
-// // 	req.Header.Set("Content-Type", "application/json")
-// // 	router.ServeHTTP(w, req)
-
-// // 	var response user.MessageResponse
-// // 	json.Unmarshal(w.Body.Bytes(), &response)
-
-// // 	assert.Equal(t, http.StatusOK, w.Code)
-// // 	assert.NotEmpty(t, response)
-// // 	assert.True(t, response.Success)
-// // }
-
-// // func TestUserForgetPassword(t *testing.T) {
-// // 	w := httptest.NewRecorder()
-
-// // 	data := map[string]interface{}{
-// // 		"code":         "7z7Z#EqO4'-C2ofOmdW3",
-// // 		"new_password": "hoangdz",
-// // 	}
-
-// // 	body, _ := json.Marshal(data)
-// // 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/reset-password", bytes.NewBuffer(body))
-// // 	req.Header.Set("Content-Type", "application/json")
-// // 	router.ServeHTTP(w, req)
-
-// // 	var response user.MessageResponse
-// // 	json.Unmarshal(w.Body.Bytes(), &response)
-
-// // 	assert.Equal(t, http.StatusOK, w.Code)
-// // 	assert.NotEmpty(t, response)
-// // 	assert.True(t, response.Success)
-// // }
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.NotEmpty(t, response)
+	assert.True(t, response.Success)
+}
