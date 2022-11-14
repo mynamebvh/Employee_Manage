@@ -101,10 +101,10 @@ func GetRequests(c *gin.Context, role map[string]interface{}) (data dto.QueryPag
 
 func GetRequestByID(id int) (re dto.QueryGetRequest, err error) {
 	err = db.DB.Table("requests as rq").
-		Select("rq.type", "rq.content", "u.full_name as full_name", "a.full_name as approved_by", "rq.status").
+		Select("rq.id", "rq.type", "rq.content", "u.full_name as full_name", "a.full_name as approved_by", "rq.status").
 		Where("rq.id = ?", id).
-		Joins("left join users as u on rq.user_id = u.id").
-		Joins("left join users as a on rq.approved_by = a.id").
+		Joins("inner join users as u on rq.user_id = u.id").
+		Joins("inner join users as a on rq.approved_by = a.id").
 		Scan(&re).
 		Error
 

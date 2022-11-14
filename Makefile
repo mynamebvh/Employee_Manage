@@ -13,4 +13,4 @@ docker-dev:
 testing:
 	go test ./tests/apis
 mock:
-	go test ./tests/apis/init_test.go ./tests/apis/department_test.go
+	go test ./tests/apis/init_test.go ./tests/apis/request_test.go

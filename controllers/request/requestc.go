@@ -69,6 +69,12 @@ func GetRequestByID(c *gin.Context) {
 		return
 	}
 
+	if request.ID == 0 {
+		appError := errorModels.NewAppError(errors.New("request not found"), errorModels.ValidationError)
+		c.Error(appError)
+		return
+	}
+
 	c.JSON(http.StatusOK, MessageResponse{
 		Success: true,
 		Message: "Success",
