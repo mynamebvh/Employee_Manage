@@ -41,13 +41,13 @@ func TestRootGetUsers(t *testing.T) {
 			Mock: mocks.MockGetUsers,
 			Want: http.StatusOK,
 		},
-		{
-			Name: "Test Root Get User By ID",
-			Type: "Success",
-			Args: nil,
-			Mock: mocks.MockGetUserByID,
-			Want: http.StatusOK,
-		},
+		// {
+		// 	Name: "Test Root Get User By ID",
+		// 	Type: "Success",
+		// 	Args: nil,
+		// 	Mock: mocks.MockGetUserByID,
+		// 	Want: http.StatusOK,
+		// },
 		{
 			Name: "Test Protect Role Get Users",
 			Type: "Role",
