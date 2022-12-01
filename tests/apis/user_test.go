@@ -4,14 +4,14 @@ import (
 	"bytes"
 	"employee_manage/controllers/auth"
 	"employee_manage/controllers/user"
-	"time"
-
-	. "employee_manage/tests/config"
 	"employee_manage/tests/mocks"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
+
+	. "employee_manage/tests/config"
 
 	"github.com/stretchr/testify/assert"
 )

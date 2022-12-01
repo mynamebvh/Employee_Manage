@@ -5,6 +5,7 @@ import (
 	modelErrors "employee_manage/constant"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -44,6 +45,7 @@ func CheckValidCheckout(userID int) (id int, err error) {
 			AND calendars.checkout_time IS NULL
 			AND DATEDIFF(calendars.checkin_time, ?) = 0`, userID, timeNow).Scan(&id)
 
+	fmt.Println("id ne", id)
 	if id == 0 {
 		err = modelErrors.NewAppError(errors.New("you have not checkin or you have already checkout"), modelErrors.ValidationError)
 	}

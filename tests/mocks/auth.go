@@ -16,10 +16,17 @@ func MockAuth() {
 	Mock.ExpectCommit()
 }
 
+func MockAuthFail() {
+	rows := Mock.NewRows([]string{"id", "email", "password"}).
+		AddRow(1, "mynamebvh@gmail.com", "$2a$12$oGIJ9QJ43E6INO4usXcoGebRB7N1lfXKOVPpnj6.vzQcPnOm9SfDe")
+
+	Mock.ExpectQuery("SELECT (.+) FROM `users` WHERE email=?(.+)").WithArgs("mynamebvh@gmail.com").WillReturnRows(rows)
+}
 func MockAdmin() {
 	rowsAdmin := Mock.NewRows([]string{"department_id", "name"}).
 		AddRow(nil, "admin")
-	Mock.ExpectQuery("SELECT (.+) FROM `users` left join user_departments (.+) WHERE users.id = ?").WithArgs(1).WillReturnRows(rowsAdmin)
+	// Mock.ExpectQuery("SELECT (.+) FROM `users` left join user_departments (.+) WHERE users.id = ?").WithArgs(1).WillReturnRows(rowsAdmin)
+	Mock.ExpectQuery("SELECT (.+) FROM `users` (.+)").WithArgs(1).WillReturnRows(rowsAdmin)
 }
 
 func MockManager() {

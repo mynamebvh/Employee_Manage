@@ -12,8 +12,19 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestLoginRoute(t *testing.T) {
+// import (
+// 	"bytes"
+// 	"employee_manage/controllers/auth"
+// 	"employee_manage/tests/mocks"
+// 	"encoding/json"
+// 	"net/http"
+// 	"net/http/httptest"
+// 	"testing"
 
+// 	"github.com/stretchr/testify/assert"
+// )
+
+func TestLoginRoute(t *testing.T) {
 	tests := []TestModel{
 		{
 			Name: "Test login success",
@@ -32,7 +43,7 @@ func TestLoginRoute(t *testing.T) {
 				Email:    "mynamebvh@gmail.com",
 				Password: "hoangdz1",
 			},
-			Mock: mocks.MockAuth,
+			Mock: mocks.MockAuthFail,
 			Want: http.StatusUnauthorized,
 		},
 		{
@@ -41,7 +52,9 @@ func TestLoginRoute(t *testing.T) {
 			Args: auth.RequestLogin{
 				Email: "mynamebvh@gmail.com",
 			},
-			Mock: mocks.MockAuth,
+			Mock: func() {
+
+			},
 			Want: http.StatusBadRequest,
 		},
 	}
@@ -74,18 +87,18 @@ func TestLoginRoute(t *testing.T) {
 	}
 }
 
-func TestErrorParseJson(t *testing.T) {
-	w := httptest.NewRecorder()
+// func TestErrorParseJson(t *testing.T) {
+// 	w := httptest.NewRecorder()
 
-	login := map[string]interface{}{
-		"email":    1,
-		"password": "hoangdz",
-	}
-	body, _ := json.Marshal(login)
+// 	login := map[string]interface{}{
+// 		"email":    1,
+// 		"password": "hoangdz",
+// 	}
+// 	body, _ := json.Marshal(login)
 
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/login", bytes.NewBuffer(body))
-	router.ServeHTTP(w, req)
+// 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/login", bytes.NewBuffer(body))
+// 	router.ServeHTTP(w, req)
 
-	assert.Equal(t, http.StatusBadRequest, w.Code)
-	assert.Empty(t, w.Body.Bytes())
-}
+// 	assert.Equal(t, http.StatusBadRequest, w.Code)
+// 	assert.Empty(t, w.Body.Bytes())
+// }
