@@ -31,7 +31,7 @@ func main() {
 
 	forever := make(chan bool)
 
-	ConsumerExcel(ch)
+	ConsumerEmail(ch)
 	ConsumerResetPassword(ch)
 	<-forever
 }
@@ -53,28 +53,27 @@ func ConsumerResetPassword(ch *amqp.Channel) {
 	go func() {
 		for message := range messages {
 			go func(message amqp.Delivery) {
-				var data services.DataQueue
-				json.Unmarshal(message.Body, &data)
+				var email string
+				json.Unmarshal(message.Body, &email)
 
-				log.Printf(" > Reset password : %s\n", data)
+				log.Printf(" > Reset password : %s\n", email)
 
-				models.ResetPassword(data.Email, "hoangdz1")
-				services.SendMail(data.Email, "Reset password", fmt.Sprintf("New password: %s", "hoangdz"))
+				models.ResetPassword(email, "hoangdz1")
+				services.SendMail(email, "Reset password", fmt.Sprintf("New password: %s", "hoangdz1"))
 			}(message)
-
 		}
 	}()
 }
 
-func ConsumerExcel(ch *amqp.Channel) {
+func ConsumerEmail(ch *amqp.Channel) {
 	messages, err := ch.Consume(
-		"excel", // queue name
-		"",      // consumer
-		true,    // auto-ack
-		false,   // exclusive
-		false,   // no local
-		false,   // no wait
-		nil,     // arguments
+		"reset-email", // queue name
+		"",            // consumer
+		true,          // auto-ack
+		false,         // exclusive
+		false,         // no local
+		false,         // no wait
+		nil,           // arguments
 	)
 	if err != nil {
 		log.Println(err)
@@ -84,15 +83,10 @@ func ConsumerExcel(ch *amqp.Channel) {
 		for message := range messages {
 			log.Printf(" > Received message: %s\n", message.Body)
 
-			data, err := services.ReadExcelResetPassword(string(message.Body))
-			if err != nil {
-				log.Println(err)
-				return
-			}
-
-			for _, d := range data {
-				body, _ := json.Marshal(d)
-				config.Publish("reset-password", string(body))
+			emails := []string{}
+			json.Unmarshal(message.Body, &emails)
+			for _, d := range emails {
+				config.Publish("reset-password", d)
 			}
 		}
 	}()

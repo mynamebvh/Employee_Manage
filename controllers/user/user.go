@@ -293,16 +293,15 @@ func ChangePassword(c *gin.Context) {
 }
 
 func ResetPassWordQueue(c *gin.Context) {
+	var request []string
 
-	file, _ := c.FormFile("file")
-
-	err := c.SaveUploadedFile(file, fmt.Sprintf("./files/%s", file.Filename))
-	if err != nil {
-		_ = c.Error(err)
+	if err := c.BindJSON(&request); err != nil {
+		appError := errorModels.NewAppError(err, errorModels.ValidationError)
+		_ = c.Error(appError)
 		return
 	}
 
-	err = config.Publish("excel", fmt.Sprintf("./files/%s", file.Filename))
+	err := config.Publish("reset-email", request)
 
 	if err != nil {
 		appError := errorModels.NewAppError(err, errorModels.ValidationError)
@@ -312,5 +311,6 @@ func ResetPassWordQueue(c *gin.Context) {
 
 	c.JSON(http.StatusOK, MessageResponse{
 		Success: true,
+		Message: "Successfully",
 	})
 }

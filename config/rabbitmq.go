@@ -1,14 +1,17 @@
 package config
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"fmt"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 var ctx = context.TODO()
 
-func Publish(queue string, body string) (err error) {
+func Publish(queue string, body interface{}) (err error) {
 	conn, err := amqp.Dial(ConfigApp.RabbitMQ.Url)
 	if err != nil {
 		return
@@ -30,6 +33,16 @@ func Publish(queue string, body string) (err error) {
 		nil,   // arguments
 	)
 	if err != nil {
+		fmt.Println("Error queue declare: ", err)
+		return
+	}
+
+	var b bytes.Buffer
+	encoder := json.NewEncoder(&b)
+	err = encoder.Encode(body)
+
+	if err != nil {
+		fmt.Println("Error encoder json: ", err)
 		return
 	}
 
@@ -41,7 +54,7 @@ func Publish(queue string, body string) (err error) {
 		false,  // immediate
 		amqp.Publishing{
 			ContentType: "text/plain",
-			Body:        []byte(body),
+			Body:        b.Bytes(),
 		})
 
 	if err != nil {
